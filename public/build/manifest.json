@@ -1,0 +1,11 @@
+{
+  "resources/js/index.tsx": {
+    "file": "assets/index-D2tVEmpx.js",
+    "name": "index",
+    "src": "resources/js/index.tsx",
+    "isEntry": true,
+    "css": [
+      "assets/index-yv6Rtf0k.css"
+    ]
+  }
+}
