@@ -6,14 +6,14 @@ import TemplateRenderer from './components/TemplateRenderer';
 import Editor from './components/Editor';
 import AuthModal from './components/AuthModal';
 import { apiService } from './services/apiService';
-import { Download, Printer, Moon, Sun, Menu, X, ArrowDown, Sparkles, Eye, Check, Edit2, ChevronRight, LayoutTemplate, LogIn, LogOut, Save, User as UserIcon, Loader2 } from 'lucide-react';
+import { Download, Moon, Sun, Menu, X, Sparkles, Eye, Check, Edit2, ChevronRight, LayoutTemplate, LogIn, LogOut, Save, Loader2 } from 'lucide-react';
 
 const Footer = () => (
     <footer className="bg-slate-900 text-white py-12 border-t border-slate-800 relative z-10 mt-auto">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
             <div className="col-span-1 md:col-span-2 space-y-4">
                 <div className="flex items-center gap-2 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                    <Sparkles className="w-6 h-6 text-blue-400" /> BD METRIX
+                    <Sparkles className="w-6 h-6 text-blue-400" /> BD METRIX <span className="text-slate-400">(ATS Friendly Resume Builder)</span>
                 </div>
                 <p className="text-slate-400 max-w-sm leading-relaxed">
                     The ultimate AI-powered resume builder helping thousands of professionals land their dream jobs with ATS-optimized templates.
@@ -322,13 +322,6 @@ const App: React.FC = () => {
         references: false
     });
 
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const slides = [
-        { title: "Build Your Dream Career", desc: "Create professional, ATS-friendly resumes in minutes.", color: "from-blue-600 to-indigo-700" },
-        { title: "AI-Powered Writing", desc: "Let our advanced AI write compelling summaries for you.", color: "from-purple-600 to-fuchsia-700" },
-        { title: "Beautiful Templates", desc: "Choose from 10+ designer-crafted layouts.", color: "from-emerald-500 to-teal-700" }
-    ];
-
     const builderRef = useRef<HTMLDivElement>(null);
     const previewContainerRef = useRef<HTMLDivElement>(null);
     const [previewScale, setPreviewScale] = useState(0.8);
@@ -433,14 +426,6 @@ const App: React.FC = () => {
         if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
         return `${Math.floor(diff / 86400)}d ago`;
     };
-
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % slides.length);
-        }, 5000);
-        return () => clearInterval(interval);
-    }, []);
 
     useEffect(() => {
         if (isDarkMode) {
@@ -700,8 +685,8 @@ const App: React.FC = () => {
             {/* Navbar */}
             <nav
                 className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled
-                        ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-slate-800 py-3'
-                        : 'bg-transparent py-4'
+                    ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-slate-800 py-3'
+                    : 'bg-transparent py-4'
                     }`}
             >
                 <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
@@ -798,25 +783,7 @@ const App: React.FC = () => {
             </nav>
 
             {/* Hero */}
-            <div className="relative overflow-hidden mb-8">
-                <div className={`absolute inset-0 bg-gradient-to-br ${slides[currentSlide].color} opacity-100 transition-all duration-1000`}></div>
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-
-                <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-12 flex flex-col items-center text-center text-white">
-                    <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight drop-shadow-md">
-                        {slides[currentSlide].title}
-                    </h1>
-                    <p className="text-lg opacity-90 max-w-2xl font-light mb-8">
-                        {slides[currentSlide].desc}
-                    </p>
-                    <button
-                        onClick={scrollToBuilder}
-                        className="bg-white text-blue-900 px-8 py-3 rounded-full font-bold text-base hover:bg-blue-50 transition-all shadow-xl flex items-center justify-center gap-2"
-                    >
-                        Start Building <ArrowDown className="w-4 h-4" />
-                    </button>
-                </div>
-            </div>
+            {/* Hero Removed for immediate Builder access */}
 
             <AdBanner position="Top" />
 

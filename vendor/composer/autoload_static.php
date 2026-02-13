@@ -346,8 +346,8 @@ class ComposerStaticInitd3c16cb86c42230c6c023d9a5d9bcf42
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -537,6 +537,7 @@ class ComposerStaticInitd3c16cb86c42230c6c023d9a5d9bcf42
 
     public static $classMap = array (
         'App\\Http\\Controllers\\Api\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/AuthController.php',
+        'App\\Http\\Controllers\\Api\\ResumeController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/ResumeController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Models\\Resume' => __DIR__ . '/../..' . '/app/Models/Resume.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
