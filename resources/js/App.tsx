@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
-import html2pdf from 'html2pdf.js';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import { INITIAL_DATA, TEMPLATES, ResumeData, User } from './types';
 import TemplateRenderer from './components/TemplateRenderer';
 import Editor from './components/Editor';
@@ -294,7 +295,11 @@ const AdBanner = ({ position }: { position: string }) => (
 const App: React.FC = () => {
     const [data, setData] = useState<ResumeData>(INITIAL_DATA);
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>('modern');
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        const saved = localStorage.getItem('theme');
+        if (saved) return saved === 'dark';
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    });
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [showDownloadModal, setShowDownloadModal] = useState(false);
     const [showMobilePreview, setShowMobilePreview] = useState(false);
@@ -430,8 +435,10 @@ const App: React.FC = () => {
     useEffect(() => {
         if (isDarkMode) {
             document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
         } else {
             document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
         }
     }, [isDarkMode]);
 
@@ -513,14 +520,6 @@ const App: React.FC = () => {
     const handleDownloadPDF = async () => {
         setShowDownloadModal(false);
 
-        // Check Auth before download? Optional. 
-        // The requirement says "users can login... to store". 
-        // We can allow download without login, but good UX is to prompt login to save first.
-        if (!user) {
-            // Maybe open auth modal here? For now, let's just let them download but suggest login.
-            // Or simply proceed.
-        }
-
         if (user) {
             // Force save immediately before download
             await apiService.saveResume(data, selectedTemplateId);
@@ -551,7 +550,7 @@ const App: React.FC = () => {
         clone.classList.remove('mx-auto');
         clone.style.transform = 'none';
         clone.style.width = '100%';
-        // let content determine height so html2pdf can paginate
+        // let content determine height so html2canvas can paginate
         clone.style.height = 'auto';
         clone.style.boxShadow = 'none';
         clone.style.printColorAdjust = 'exact';
@@ -573,35 +572,94 @@ const App: React.FC = () => {
 
         await new Promise(r => setTimeout(r, 150));
 
-        const widthInPx = 794;
+        // --- Extreme Color Sanitization Pass for html2canvas ---
 
-        // @ts-ignore
-        const opt = {
-            margin: 0,
-            filename: `${data.personalInfo.fullName.replace(/\s+/g, '_')}_Resume.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: {
-                scale: 2,
-                useCORS: true,
-                letterRendering: true,
-                scrollY: 0,
-                scrollX: 0,
-                windowWidth: widthInPx,
-                width: widthInPx,
-                x: 0,
-                y: 0
-            },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        // 1. Canvas-based RGB Resolver
+        const canvasResolver = document.createElement('canvas');
+        canvasResolver.width = 1;
+        canvasResolver.height = 1;
+        const ctx = canvasResolver.getContext('2d');
+        const forceToRgb = (color: string) => {
+            if (!color || color === 'transparent' || color === 'none') return color;
+            if (!ctx) return color;
+            ctx.fillStyle = 'rgba(0,0,0,0)'; // Reset
+            ctx.fillStyle = color;
+            return ctx.fillStyle; // Returns #RRGGBB or rgba(...)
         };
 
+        // 2. Recursive Regex Sanitizer for complex strings (like gradients)
+        const sanitizeColorStrings = (str: string) => {
+            if (!str) return str;
+            // Matches oklch(...), oklab(...), lch(...) with balanced parens
+            const modernColorRegex = /(?:oklch|oklab|lch)\((?:[^()]+|\((?:[^()]+|\([^()]*\))*\))*\)/g;
+            return str.replace(modernColorRegex, (match) => forceToRgb(match));
+        };
+
+        const elements = [clone, ...Array.from(clone.querySelectorAll('*'))];
+        elements.forEach((el) => {
+            if (!(el instanceof HTMLElement || el instanceof SVGElement)) return;
+
+            const style = window.getComputedStyle(el);
+            const props = [
+                'color', 'backgroundColor', 'borderColor',
+                'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor',
+                'outlineColor', 'fill', 'stroke', 'stopColor'
+            ];
+
+            props.forEach(prop => {
+                const value = (style as any)[prop];
+                if (value) {
+                    (el.style as any)[prop] = forceToRgb(value);
+                }
+            });
+
+            if (style.backgroundImage && style.backgroundImage !== 'none') {
+                el.style.backgroundImage = sanitizeColorStrings(style.backgroundImage);
+            }
+        });
+
+        // 3. Stylesheet Isolation: Strip all internal and external styles
+        const styles = clone.querySelectorAll('style, link[rel="stylesheet"]');
+        styles.forEach(s => s.remove());
+
+        const widthInPx = 794;
+
         try {
-            // @ts-ignore
-            // allow html2pdf to use CSS page breaks
-            await html2pdf().from(clone).set({ ...opt, pagebreak: { mode: ['css', 'legacy'] } }).save();
+            const canvas = await html2canvas(clone, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff',
+                width: widthInPx,
+                height: clone.offsetHeight,
+                windowWidth: widthInPx,
+                onclone: (clonedDoc) => {
+                    // Final safety check inside the clone context
+                    const sheet = clonedDoc.querySelectorAll('style, link');
+                    sheet.forEach(s => s.remove());
+                }
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.98);
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`${data.personalInfo.fullName.replace(/\s+/g, '_')}_Resume.pdf`);
+
         } catch (error) {
             console.error("PDF generation failed:", error);
         } finally {
-            document.body.removeChild(container);
+            if (document.body.contains(container)) {
+                document.body.removeChild(container);
+            }
         }
     };
 
@@ -775,7 +833,7 @@ const App: React.FC = () => {
                                 onClick={() => { scrollToBuilder(); setShowDownloadModal(true); }}
                                 className="bg-emerald-600 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-emerald-700 transition shadow-lg hover:shadow-emerald-500/30 transform hover:-translate-y-0.5 flex items-center gap-2"
                             >
-                                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} Download PDF
+                                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                             </button>
                         </div>
                     </div>
