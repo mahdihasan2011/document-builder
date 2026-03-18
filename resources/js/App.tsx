@@ -578,20 +578,26 @@ const App: React.FC = () => {
         const canvasResolver = document.createElement('canvas');
         canvasResolver.width = 1;
         canvasResolver.height = 1;
-        const ctx = canvasResolver.getContext('2d');
+        const ctx = canvasResolver.getContext('2d', { willReadFrequently: true });
+        
         const forceToRgb = (color: string) => {
             if (!color || color === 'transparent' || color === 'none') return color;
             if (!ctx) return color;
-            ctx.fillStyle = 'rgba(0,0,0,0)'; // Reset
+            ctx.clearRect(0, 0, 1, 1);
             ctx.fillStyle = color;
-            return ctx.fillStyle; // Returns #RRGGBB or rgba(...)
+            ctx.fillRect(0, 0, 1, 1);
+            const data = ctx.getImageData(0, 0, 1, 1).data;
+            if (data[3] === 0 && !color.includes('transparent') && !color.includes('rgba(0, 0, 0, 0)')) {
+                return color; // Fallback if browser canvas failed to parse
+            }
+            return `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
         };
 
-        // 2. Recursive Regex Sanitizer for complex strings (like gradients)
+        // 2. Recursive Regex Sanitizer for complex strings (like gradients or shadows)
         const sanitizeColorStrings = (str: string) => {
             if (!str) return str;
-            // Matches oklch(...), oklab(...), lch(...) with balanced parens
-            const modernColorRegex = /(?:oklch|oklab|lch)\((?:[^()]+|\((?:[^()]+|\([^()]*\))*\))*\)/g;
+            // Matches any oklch(...), oklab(...), lch(...), color(...) with balanced parens
+            const modernColorRegex = /(?:oklch|oklab|lch|color)\((?:[^()]+|\((?:[^()]+|\([^()]*\))*\))*\)/g;
             return str.replace(modernColorRegex, (match) => forceToRgb(match));
         };
 
@@ -603,24 +609,30 @@ const App: React.FC = () => {
             const props = [
                 'color', 'backgroundColor', 'borderColor',
                 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor',
-                'outlineColor', 'fill', 'stroke', 'stopColor'
+                'outlineColor', 'fill', 'stroke', 'stopColor', 'textDecorationColor', 'columnRuleColor',
+                'boxShadow', 'textShadow', 'backgroundImage'
             ];
 
             props.forEach(prop => {
                 const value = (style as any)[prop];
-                if (value) {
-                    (el.style as any)[prop] = forceToRgb(value);
+                if (value && value !== 'none') {
+                    if (prop === 'boxShadow' || prop === 'textShadow' || prop === 'backgroundImage') {
+                        if (value.includes('oklch') || value.includes('oklab') || value.includes('lch') || value.includes('color(')) {
+                            (el.style as any)[prop] = sanitizeColorStrings(value);
+                        }
+                    } else {
+                        // For generic color properties, force it to rgba if it uses modern color spaces
+                        if (value.includes('oklch') || value.includes('oklab') || value.includes('lch') || value.includes('color(')) {
+                            (el.style as any)[prop] = forceToRgb(value);
+                        }
+                    }
                 }
             });
-
-            if (style.backgroundImage && style.backgroundImage !== 'none') {
-                el.style.backgroundImage = sanitizeColorStrings(style.backgroundImage);
-            }
         });
 
-        // 3. Stylesheet Isolation: Strip all internal and external styles
-        const styles = clone.querySelectorAll('style, link[rel="stylesheet"]');
-        styles.forEach(s => s.remove());
+        // 3. Stylesheet Isolation is REMOVED to preserve Tailwind CSS grid/flex classes
+        // Stylesheets are required for layout. Our inline color substitutions above
+        // take priority to prevent html2canvas color-parsing crashes.
 
         const widthInPx = 794;
 
@@ -633,10 +645,8 @@ const App: React.FC = () => {
                 width: widthInPx,
                 height: clone.offsetHeight,
                 windowWidth: widthInPx,
-                onclone: (clonedDoc) => {
-                    // Final safety check inside the clone context
-                    const sheet = clonedDoc.querySelectorAll('style, link');
-                    sheet.forEach(s => s.remove());
+                onclone: () => {
+                    // Do not strip stylesheets here, we need them for flex/grid layouts
                 }
             });
 

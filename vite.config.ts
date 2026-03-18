@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
     return {
         plugins: [
             laravel({
-                input: ['resources/js/index.tsx'],
+                input: ['resources/css/app.css', 'resources/js/index.tsx'],
                 refresh: true,
             }),
             react(),
