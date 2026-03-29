@@ -1,0 +1,5 @@
+{
+  "name": "ATS Friendly Resume/CV Builder",
+  "description": "An ATS-friendly resume builder featuring 10 professional templates, live preview, and AI-powered content generation using Gemini 2.5.",
+  "requestFramePermissions": []
+}
