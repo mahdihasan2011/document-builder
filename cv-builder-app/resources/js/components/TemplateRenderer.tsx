@@ -60,7 +60,7 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
     const order = layoutOrder || data.sectionOrder || ['summary', 'experience', 'education', 'projects', 'skills', 'languages', 'activities', 'references'];
     return order.map(section => {
       if (rendererMap[section]) {
-        return <div key={section} onClick={handleClick(section)} className="cursor-pointer hover:bg-blue-50/10 transition-colors rounded -mx-1 px-1">{rendererMap[section]()}</div>;
+        return <div key={section} onClick={handleClick(section)} className="cursor-pointer hover:bg-blue-50/10 transition-colors rounded -mx-1 px-1 break-inside-avoid">{rendererMap[section]()}</div>;
       }
       return null;
     });
@@ -74,9 +74,9 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
       skills: () => showSkills ? (
         <div className="mb-6">
             <h3 className="uppercase tracking-widest text-xs font-bold border-b border-slate-600 mb-3 pb-1" style={{ color: accent !== '#2563eb' ? accent : '#cbd5e1' }}>Skills</h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap -mb-2">
                 {data.skills.map((skill, i) => (
-                <span key={i} className="bg-slate-700 px-2 py-1 rounded text-xs">{skill}</span>
+                <span key={i} className="bg-slate-700 px-2 py-1 rounded text-xs mr-2 mb-2 inline-block">{skill}</span>
                 ))}
             </div>
         </div>
@@ -455,8 +455,8 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
        skills: () => showSkills ? (
            <div className="mb-6">
                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-200 pb-2">Core Competencies</h3>
-               <div className="flex flex-wrap gap-2">
-                  {data.skills.map((s,i) => <span key={i} className="text-sm bg-gray-100 px-3 py-1 rounded text-gray-800">{s}</span>)}
+               <div className="flex flex-wrap -mb-2">
+                  {data.skills.map((s,i) => <span key={i} className="text-sm bg-gray-100 px-3 py-1 rounded text-gray-800 mr-2 mb-2 inline-block">{s}</span>)}
                </div>
            </div>
        ) : <></>,
@@ -516,8 +516,8 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
         skills: () => showSkills ? (
              <div className="mb-10 text-center">
                 <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-center mb-4 text-gray-400">Skills</h3>
-                <div className="flex justify-center flex-wrap gap-4 max-w-lg mx-auto">
-                    {data.skills.map(s => <span key={s} className="text-sm text-gray-600">{s}</span>)}
+                <div className="flex justify-center flex-wrap -mb-4 max-w-lg mx-auto">
+                    {data.skills.map(s => <span key={s} className="text-sm text-gray-600 mx-2 mb-4 inline-block">{s}</span>)}
                 </div>
              </div>
         ) : <></>
@@ -559,8 +559,8 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
           skills: () => showSkills ? (
               <div className="mb-8">
                   <h3 className="text-white font-bold uppercase text-sm mb-4 border-b border-white/20 pb-2">Skills</h3>
-                  <div className="flex flex-wrap gap-2">
-                      {data.skills.map(s => <span key={s} className="text-xs bg-white/10 px-2 py-1 rounded text-white">{s}</span>)}
+                  <div className="flex flex-wrap -mb-2">
+                      {data.skills.map(s => <span key={s} className="text-xs bg-white/10 px-2 py-1 rounded text-white mr-2 mb-2 inline-block">{s}</span>)}
                   </div>
               </div>
           ) : <></>,
@@ -713,8 +713,8 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
                         {showSkills && (
                             <div>
                                 <h3 className="font-bold text-gray-900 mb-4 uppercase text-sm">Skills</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {data.skills.map(s => <span key={s} className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">{s}</span>)}
+                                <div className="flex flex-wrap -mb-2">
+                                    {data.skills.map(s => <span key={s} className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded mr-2 mb-2 inline-block">{s}</span>)}
                                 </div>
                             </div>
                         )}
@@ -940,19 +940,19 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
       skills: () => showSkills ? (
         <div className="mb-6">
                 <h2 className="text-lg font-bold uppercase border-b border-gray-300 mb-3 tracking-wide" style={{ color: accent }}>Skills</h2>
-                <span className="text-sm">{data.skills.join(", ")}</span>
+                <div className="text-sm">{data.skills.join(", ")}</div>
         </div>
       ) : <></>,
       languages: () => showLanguages ? (
         <div className="mb-6">
             <h2 className="text-lg font-bold uppercase border-b border-gray-300 mb-3 tracking-wide" style={{ color: accent }}>Languages</h2>
-            <span className="text-sm">{data.languages.join(", ")}</span>
+            <div className="text-sm">{data.languages.join(", ")}</div>
         </div>
       ) : <></>,
       activities: () => showActivities ? (
         <div className="mb-6">
             <h2 className="text-lg font-bold uppercase border-b border-gray-300 mb-3 tracking-wide" style={{ color: accent }}>Activities</h2>
-            <span className="text-sm">{data.activities.join(", ")}</span>
+            <div className="text-sm">{data.activities.join(", ")}</div>
         </div>
       ) : <></>,
       references: () => showReferences ? (
