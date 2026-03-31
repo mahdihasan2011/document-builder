@@ -1,0 +1,42 @@
+{
+  "node_modules/canvg/lib/index.es.js": {
+    "file": "assets/index.es-BMAa_h9o.js",
+    "name": "index.es",
+    "src": "node_modules/canvg/lib/index.es.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/index.tsx"
+    ],
+    "css": [
+      "assets/app-DeMAE-Q3.css"
+    ]
+  },
+  "node_modules/dompurify/dist/purify.es.mjs": {
+    "file": "assets/purify.es-Bzr520pe.js",
+    "name": "purify.es",
+    "src": "node_modules/dompurify/dist/purify.es.mjs",
+    "isDynamicEntry": true
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-DeMAE-Q3.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/index.tsx": {
+    "file": "assets/index-CRKsBvXN.js",
+    "name": "index",
+    "src": "resources/js/index.tsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "node_modules/dompurify/dist/purify.es.mjs",
+      "node_modules/canvg/lib/index.es.js"
+    ],
+    "css": [
+      "assets/app-DeMAE-Q3.css"
+    ]
+  }
+}
