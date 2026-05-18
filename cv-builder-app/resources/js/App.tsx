@@ -536,7 +536,7 @@ const App: React.FC = () => {
         container.style.position = 'fixed';
         container.style.top = '0';
         container.style.left = '0';
-        container.style.width = '210mm';
+        container.style.width = '794px'; // Strict A4 width in pixels (96 DPI)
         // allow height to expand for multi-page output
         container.style.height = 'auto';
         container.style.zIndex = '-9999';
@@ -548,7 +548,10 @@ const App: React.FC = () => {
         clone.style.margin = '0';
         clone.classList.remove('mx-auto');
         clone.style.transform = 'none';
-        clone.style.width = '100%';
+        clone.style.width = '794px'; // Strict A4 width in pixels
+        clone.style.minWidth = '794px';
+        clone.style.maxWidth = '794px';
+        clone.style.position = 'relative'; // Crucial root offsetParent for offsetTop calculations
         // let content determine height so html2canvas can paginate
         clone.style.height = 'auto';
         clone.style.boxShadow = 'none';
@@ -558,7 +561,7 @@ const App: React.FC = () => {
         // inject print CSS to help with paging and avoid breaking inside items
         const styleTag = document.createElement('style');
         styleTag.innerHTML = `
-            @page { size: A4; margin: 10mm; }
+            @page { size: A4; margin: 0; }
             .avoid-break { page-break-inside: avoid; break-inside: avoid; }
             .page-break { page-break-after: always; }
             /* ensure images and tables scale correctly */
@@ -571,44 +574,79 @@ const App: React.FC = () => {
 
         await new Promise(r => setTimeout(r, 150));
 
-        const pageHeightInPx = 1123;
+        const pageHeightInPx = 1123; // Exact A4 height at 96 DPI
 
         // 1. Identify and mark individual items in multi-item sections as break-inside-avoid
-        const sectionWrappers = clone.querySelectorAll('.cursor-pointer');
+        const sectionWrappers = clone.querySelectorAll('[data-section]');
         sectionWrappers.forEach((sectionContainer) => {
-            const innerContainer = sectionContainer.firstElementChild;
-            if (!innerContainer) return;
-
-            const textContent = innerContainer.textContent || '';
-            const isMultiItemSection = /experience|projects|education|references/i.test(textContent);
+            const section = sectionContainer.getAttribute('data-section');
+            const isMultiItemSection = ['experience', 'projects', 'education', 'references'].includes(section || '');
 
             if (isMultiItemSection) {
-                const children = Array.from(innerContainer.children);
-                // Direct descendants under the heading are the items
-                children.slice(1).forEach((item) => {
-                    item.classList.add('break-inside-avoid');
-                });
+                const innerContainer = sectionContainer.firstElementChild;
+                if (innerContainer) {
+                    const children = Array.from(innerContainer.children);
+                    // Direct descendants under the heading are the items
+                    children.slice(1).forEach((item) => {
+                        item.classList.add('break-inside-avoid');
+                    });
+                }
             }
         });
+
+        // Helper to calculate element top position relative to clone (independent of viewport scroll/zoom)
+        const getElementTop = (el: HTMLElement) => {
+            let top = 0;
+            let current: HTMLElement | null = el;
+            while (current && current !== clone) {
+                top += current.offsetTop;
+                current = current.offsetParent as HTMLElement | null;
+            }
+            return top;
+        };
 
         // 2. Prevent sections and individual items from being cut in half across pages
         const elementsToAvoid = clone.querySelectorAll('.break-inside-avoid, .avoid-break');
         elementsToAvoid.forEach((el) => {
-            const rect = el.getBoundingClientRect();
-            const parentRect = clone.getBoundingClientRect();
-            const elementTop = rect.top - parentRect.top;
-            const elementHeight = rect.height;
+            const htmlEl = el as HTMLElement;
+            const elementTop = getElementTop(htmlEl);
+            const elementHeight = htmlEl.offsetHeight;
             const elementBottom = elementTop + elementHeight;
 
             const pageOfTop = Math.floor(elementTop / pageHeightInPx);
             const pageOfBottom = Math.floor(elementBottom / pageHeightInPx);
 
+            // Top gap for next pages (pages > 0) in pixels (e.g., 40px, approx 10mm)
+            const topGap = 40;
+
+            // If the element crosses a page boundary
             if (pageOfTop !== pageOfBottom) {
                 const nextPageTop = (pageOfTop + 1) * pageHeightInPx;
-                const pushOffset = nextPageTop - elementTop;
+                // Push it to start exactly topGap pixels below the top of the next page
+                const pushOffset = (nextPageTop + topGap) - elementTop;
                 
-                const currentMarginTop = parseFloat(window.getComputedStyle(el).marginTop) || 0;
-                (el as HTMLElement).style.marginTop = `${currentMarginTop + pushOffset}px`;
+                if (pushOffset > 0 && pushOffset < pageHeightInPx) {
+                    const spacer = document.createElement('div');
+                    spacer.style.height = `${pushOffset}px`;
+                    spacer.style.width = '100%';
+                    spacer.style.display = 'block';
+                    spacer.style.clear = 'both';
+                    htmlEl.parentNode?.insertBefore(spacer, htmlEl);
+                }
+            } else if (pageOfTop > 0) {
+                // Entirely on a subsequent page, but starts within the forbidden top gap area
+                const relativeTop = elementTop % pageHeightInPx;
+                if (relativeTop < topGap) {
+                    const pushOffset = topGap - relativeTop;
+                    if (pushOffset > 0 && pushOffset < topGap) {
+                        const spacer = document.createElement('div');
+                        spacer.style.height = `${pushOffset}px`;
+                        spacer.style.width = '100%';
+                        spacer.style.display = 'block';
+                        spacer.style.clear = 'both';
+                        htmlEl.parentNode?.insertBefore(spacer, htmlEl);
+                    }
+                }
             }
         });
 

@@ -99,6 +99,7 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
         return (
           <div 
             key={section} 
+            data-section={section}
             onClick={handleClick(section)} 
             className={`cursor-pointer hover:bg-blue-50/10 transition-colors rounded -mx-1 px-1 ${avoidClass}`}
           >
