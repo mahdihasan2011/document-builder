@@ -586,10 +586,24 @@ const App: React.FC = () => {
                 const innerContainer = sectionContainer.firstElementChild;
                 if (innerContainer) {
                     const children = Array.from(innerContainer.children);
-                    // Direct descendants under the heading are the items
-                    children.slice(1).forEach((item) => {
-                        item.classList.add('break-inside-avoid');
-                    });
+                    if (children.length > 1) {
+                        // Create a wrapper for heading (children[0]) and the first item (children[1])
+                        // to prevent the heading from being orphaned at the bottom of the page
+                        const firstGroupWrapper = document.createElement('div');
+                        firstGroupWrapper.className = 'break-inside-avoid';
+                        
+                        // Insert the wrapper right before the heading in the DOM
+                        innerContainer.insertBefore(firstGroupWrapper, children[0]);
+                        
+                        // Move both heading and the first item into the wrapper
+                        firstGroupWrapper.appendChild(children[0]);
+                        firstGroupWrapper.appendChild(children[1]);
+
+                        // Mark any subsequent items (starting from index 2 in original list) with break-inside-avoid
+                        children.slice(2).forEach((item) => {
+                            item.classList.add('break-inside-avoid');
+                        });
+                    }
                 }
             }
         });
