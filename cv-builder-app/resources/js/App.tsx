@@ -212,13 +212,15 @@ const MobilePreviewModal = ({
     onClose,
     templateId,
     data,
-    onDownload
+    onDownload,
+    resumeHeight
 }: {
     isOpen: boolean,
     onClose: () => void,
     templateId: string,
     data: ResumeData,
-    onDownload: () => void
+    onDownload: () => void,
+    resumeHeight: number
 }) => {
     const [scale, setScale] = useState(0.4);
 
@@ -242,7 +244,7 @@ const MobilePreviewModal = ({
 
     // Calculate dimensions to correct flow height
     const scaledWidth = 794 * scale;
-    const scaledHeight = 1123 * scale; // Approx A4 height in px
+    const scaledHeight = resumeHeight * scale; // Dynamic A4 height in px
 
     return (
         <div className="fixed inset-0 z-[100] bg-gray-900 flex flex-col animate-in slide-in-from-bottom-10 duration-200 lg:hidden">
@@ -308,6 +310,7 @@ const App: React.FC = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+    const [resumeHeight, setResumeHeight] = useState(1123);
 
     // Auth State
     const [user, setUser] = useState<User | null>(null);
@@ -568,6 +571,56 @@ const App: React.FC = () => {
 
         await new Promise(r => setTimeout(r, 150));
 
+        const pageHeightInPx = 1123;
+
+        // 1. Identify and mark individual items in multi-item sections as break-inside-avoid
+        const sectionWrappers = clone.querySelectorAll('.cursor-pointer');
+        sectionWrappers.forEach((sectionContainer) => {
+            const innerContainer = sectionContainer.firstElementChild;
+            if (!innerContainer) return;
+
+            const textContent = innerContainer.textContent || '';
+            const isMultiItemSection = /experience|projects|education|references/i.test(textContent);
+
+            if (isMultiItemSection) {
+                const children = Array.from(innerContainer.children);
+                // Direct descendants under the heading are the items
+                children.slice(1).forEach((item) => {
+                    item.classList.add('break-inside-avoid');
+                });
+            }
+        });
+
+        // 2. Prevent sections and individual items from being cut in half across pages
+        const elementsToAvoid = clone.querySelectorAll('.break-inside-avoid, .avoid-break');
+        elementsToAvoid.forEach((el) => {
+            const rect = el.getBoundingClientRect();
+            const parentRect = clone.getBoundingClientRect();
+            const elementTop = rect.top - parentRect.top;
+            const elementHeight = rect.height;
+            const elementBottom = elementTop + elementHeight;
+
+            const pageOfTop = Math.floor(elementTop / pageHeightInPx);
+            const pageOfBottom = Math.floor(elementBottom / pageHeightInPx);
+
+            if (pageOfTop !== pageOfBottom) {
+                const nextPageTop = (pageOfTop + 1) * pageHeightInPx;
+                const pushOffset = nextPageTop - elementTop;
+                
+                const currentMarginTop = parseFloat(window.getComputedStyle(el).marginTop) || 0;
+                (el as HTMLElement).style.marginTop = `${currentMarginTop + pushOffset}px`;
+            }
+        });
+
+        // 3. Now calculate exact page count and height in pixels after shifting
+        const naturalHeight = clone.offsetHeight;
+        const numPages = Math.max(1, Math.ceil(naturalHeight / pageHeightInPx));
+        const targetHeight = numPages * pageHeightInPx;
+
+        // Set the clone's height to the calculated multiple of page height
+        clone.style.height = `${targetHeight}px`;
+        clone.style.minHeight = `${targetHeight}px`;
+
         // --- Extreme Color Sanitization Pass for html2canvas ---
 
         // 1. Canvas-based RGB Resolver
@@ -655,9 +708,24 @@ const App: React.FC = () => {
 
             const imgProps = pdf.getImageProperties(imgData);
             const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            const pdfPageHeight = pdf.internal.pageSize.getHeight(); // 297mm for A4
+            const totalImgHeightInPdf = (imgProps.height * pdfWidth) / imgProps.width;
 
-            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            let heightLeft = totalImgHeightInPdf;
+            let position = 0;
+
+            // Page 1
+            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, totalImgHeightInPdf);
+            heightLeft -= pdfPageHeight;
+
+            // Extra pages
+            while (heightLeft > 0) {
+                position = heightLeft - totalImgHeightInPdf; // mathematical shift upwards
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, totalImgHeightInPdf);
+                heightLeft -= pdfPageHeight;
+            }
+
             pdf.save(`${data.personalInfo.fullName.replace(/\s+/g, '_')}_Resume.pdf`);
 
         } catch (error) {
@@ -896,7 +964,7 @@ const App: React.FC = () => {
                                 <div
                                     style={{
                                         width: 794 * previewScale,
-                                        height: 1123 * previewScale,
+                                        height: resumeHeight * previewScale,
                                         position: 'relative',
                                         flexShrink: 0
                                     }}
@@ -907,7 +975,7 @@ const App: React.FC = () => {
                                             transformOrigin: 'top left',
                                             transition: 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
                                             width: '794px',
-                                            height: '1123px',
+                                            height: `${resumeHeight}px`,
                                             position: 'absolute',
                                             top: 0,
                                             left: 0
@@ -920,6 +988,7 @@ const App: React.FC = () => {
                                             data={data}
                                             id="resume-preview-container"
                                             onSectionClick={handleSectionFocus}
+                                            onHeightChange={setResumeHeight}
                                         />
                                     </div>
                                 </div>
@@ -1016,6 +1085,7 @@ const App: React.FC = () => {
                 templateId={selectedTemplateId}
                 data={data}
                 onDownload={handleDownloadPDF}
+                resumeHeight={resumeHeight}
             />
             <AuthModal
                 isOpen={isAuthModalOpen}

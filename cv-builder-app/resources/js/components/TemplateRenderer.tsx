@@ -7,13 +7,45 @@ interface TemplateRendererProps {
   data: ResumeData;
   id?: string;
   onSectionClick?: (section: string) => void;
+  onHeightChange?: (height: number) => void;
 }
 
-const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, id, onSectionClick }) => {
-  
+const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, id, onSectionClick, onHeightChange }) => {
+  const [containerHeight, setContainerHeight] = React.useState<string>('297mm');
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useLayoutEffect(() => {
+    if (containerRef.current) {
+      // Temporarily set height to auto to measure natural content height
+      const originalHeight = containerRef.current.style.height;
+      containerRef.current.style.height = 'auto';
+      
+      // Measure the scrollHeight
+      const scrollHeight = containerRef.current.scrollHeight;
+      
+      // Restore original height
+      containerRef.current.style.height = originalHeight;
+      
+      // Calculate how many pages (1 page = width * 1.4142857)
+      const currentWidth = containerRef.current.offsetWidth || 794;
+      const pageHeight = currentWidth * 1.4142857;
+      
+      const numPages = Math.max(1, Math.ceil(scrollHeight / pageHeight));
+      
+      // Set the height in mm so it scales perfectly in any context (print, export, preview)
+      setContainerHeight(`${numPages * 297}mm`);
+
+      if (onHeightChange) {
+        // Report pixel height to parent for scaling
+        onHeightChange(numPages * pageHeight);
+      }
+    }
+  }, [data, templateId, onHeightChange]);
+
   const containerStyle: React.CSSProperties = {
     width: '210mm', // A4 width
     minHeight: '297mm', // A4 height
+    height: containerHeight,
     backgroundColor: 'white',
     overflow: 'hidden',
     position: 'relative',
@@ -60,7 +92,19 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
     const order = layoutOrder || data.sectionOrder || ['summary', 'experience', 'education', 'projects', 'skills', 'languages', 'activities', 'references'];
     return order.map(section => {
       if (rendererMap[section]) {
-        return <div key={section} onClick={handleClick(section)} className="cursor-pointer hover:bg-blue-50/10 transition-colors rounded -mx-1 px-1 break-inside-avoid">{rendererMap[section]()}</div>;
+        // Multi-item sections shouldn't be forced entirely onto one page if they are long.
+        // Instead, we let them split naturally, while preventing individual items inside them from splitting.
+        const isMultiItem = ['experience', 'projects', 'education', 'references'].includes(section);
+        const avoidClass = isMultiItem ? '' : 'break-inside-avoid';
+        return (
+          <div 
+            key={section} 
+            onClick={handleClick(section)} 
+            className={`cursor-pointer hover:bg-blue-50/10 transition-colors rounded -mx-1 px-1 ${avoidClass}`}
+          >
+            {rendererMap[section]()}
+          </div>
+        );
       }
       return null;
     });
@@ -693,7 +737,7 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
       };
 
       return (
-          <div className="flex font-sans" style={{ minHeight: '297mm' }}>
+          <div className="flex h-full font-sans" style={{ minHeight: '297mm' }}>
               <div className="w-[40%] p-8" style={{ backgroundColor: accent, color: 'white' }}>
                   <div className="mb-10" onClick={handleClick('personal')}>
                        {data.personalInfo.profilePicture && <img src={data.personalInfo.profilePicture} className="w-32 h-32 rounded-full object-cover mb-6 border-4 border-white/20 mx-auto" />}
@@ -1063,6 +1107,7 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
   return (
     <div 
         id={id}
+        ref={containerRef}
         style={containerStyle} 
         className="mx-auto bg-white"
     >
