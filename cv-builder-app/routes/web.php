@@ -7,3 +7,9 @@ Route::get('/', function () {
 });
 
 
+Route::get('/optimize', function () {
+    Artisan::call('config:cache');
+    Artisan::call('route:cache');
+    Artisan::call('view:cache');
+    return "Optimized!";
+});

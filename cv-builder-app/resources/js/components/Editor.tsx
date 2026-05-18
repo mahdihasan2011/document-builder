@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ResumeData, Experience, Education, Project, Reference, SocialLink } from '../types';
 import { generateResumeSummary, generateExperienceBullets, generateProjectDescription, generateSkills } from '../services/geminiService';
@@ -314,12 +313,12 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
 
     const InputWithIcon = ({ icon: Icon, ...props }: any) => (
         <div className="relative w-full">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-colors">
                 <Icon className="w-4 h-4" />
             </div>
             <input
                 {...props}
-                className={`input-field !pl-10 ${props.className || ''}`}
+                className={`input-field !pl-11 ${props.className || ''}`}
             />
         </div>
     );
@@ -340,7 +339,15 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
         draggable?: boolean
     }) => (
         <div
-            className={`flex justify-between items-center cursor-pointer py-3 select-none rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors px-2 -mx-2 ${expanded[sectionKey] ? 'bg-gray-50 dark:bg-slate-800/50 mb-4' : ''} ${dragOverSection === sectionKey ? 'border-2 border-dashed border-blue-400 bg-blue-50/50' : ''}`}
+            className={`flex justify-between items-center cursor-pointer py-3 select-none rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-all duration-300 px-3 -mx-3 border border-transparent ${
+                expanded[sectionKey] 
+                    ? 'bg-slate-50/80 dark:bg-slate-800/20 border-slate-100/50 dark:border-slate-800/40 shadow-sm mb-4' 
+                    : ''
+            } ${
+                dragOverSection === sectionKey 
+                    ? 'border-2 border-dashed border-indigo-400 bg-indigo-50/30 dark:bg-indigo-950/20' 
+                    : ''
+            }`}
             onClick={() => toggleExpanded(sectionKey)}
             draggable={draggable}
             onDragStart={(e) => draggable && handleDragStart(e, sectionKey)}
@@ -350,31 +357,38 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
         >
             <div className="flex items-center gap-3">
                 {draggable && (
-                    <div className="cursor-grab text-gray-300 hover:text-gray-500 active:cursor-grabbing p-1">
+                    <div className="cursor-grab text-slate-300 dark:text-slate-600 hover:text-indigo-500 active:cursor-grabbing p-1 transition-colors">
                         <GripVertical className="w-4 h-4" />
                     </div>
                 )}
-                <button className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition">
+                <button className="text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-all duration-300 transform">
                     {expanded[sectionKey] ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                 </button>
                 <div className="flex items-center gap-2">
-                    {Icon && <Icon className="w-4 h-4 text-blue-500" />}
-                    <h3 className="text-base font-bold text-gray-800 dark:text-gray-100">{title}</h3>
+                    {Icon && <Icon className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />}
+                    <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 tracking-wide uppercase">{title}</h3>
                 </div>
             </div>
             <div className="flex items-center gap-3">
                 {visibilityKey && (
                     <button
                         onClick={(e) => toggleResumeVisibility(visibilityKey, e)}
-                        className={`p-2 rounded-md transition ${isVisibleInResume(visibilityKey) ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' : 'text-gray-400 hover:text-gray-600'}`}
+                        className={`p-2 rounded-xl transition-all duration-300 border ${
+                            isVisibleInResume(visibilityKey) 
+                                ? 'text-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100/30 dark:border-emerald-800/40 shadow-sm shadow-emerald-500/5' 
+                                : 'text-slate-400 border-slate-200/40 dark:border-slate-800/20 hover:text-slate-600 hover:bg-slate-100'
+                        }`}
                         title={isVisibleInResume(visibilityKey) ? "Visible in Resume" : "Hidden in Resume"}
                     >
                         {isVisibleInResume(visibilityKey) ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                     </button>
                 )}
                 {onAdd && (
-                    <button onClick={onAdd} className="text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition flex items-center gap-1 border border-blue-100 dark:border-blue-800">
-                        <Plus className="w-3 h-3" /> Add
+                    <button 
+                        onClick={onAdd} 
+                        className="text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-100/30 dark:border-indigo-800/40 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105 active:scale-95 duration-200 flex items-center gap-1 shadow-sm"
+                    >
+                        <Plus className="w-3.5 h-3.5" /> Add
                     </button>
                 )}
             </div>
@@ -383,10 +397,10 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
 
     const sectionConfig: Record<string, () => React.ReactNode> = {
         summary: () => (
-            <section id="editor-section-summary" className="space-y-4 pt-4 border-b border-gray-100 dark:border-slate-800 pb-6">
+            <section id="editor-section-summary" className="space-y-4 pt-4 border-b border-slate-200/40 dark:border-slate-800/40 pb-6">
                 <SectionHeader title="Professional Summary" icon={Briefcase} sectionKey="summary" visibilityKey="summary" draggable />
                 {expanded['summary'] && (
-                    <div className="relative w-full px-2">
+                    <div className="relative w-full px-1">
                         <textarea
                             value={data.summary}
                             onChange={(e) => onChange({ ...data, summary: e.target.value })}
@@ -397,9 +411,9 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
                         <button
                             onClick={handleSummaryGenerate}
                             disabled={isGenerating}
-                            className="absolute bottom-3 right-5 flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white px-3 py-1.5 rounded-full text-xs font-bold hover:shadow-lg disabled:opacity-50 transition-all border border-transparent hover:scale-105"
+                            className="absolute bottom-3 right-5 flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-4 py-2 rounded-full text-xs font-bold shadow-[0_4px_12px_rgba(99,102,241,0.25)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.4)] disabled:opacity-50 transition-all border border-transparent hover:scale-105 active:scale-95 duration-200 cursor-pointer"
                         >
-                            {isGenerating ? <Loader2 className="animate-spin w-3 h-3" /> : <Wand2 className="w-3 h-3" />}
+                            {isGenerating ? <Loader2 className="animate-spin w-3.5 h-3.5" /> : <Sparkles className="w-3.5 h-3.5" />}
                             Generate with AI
                         </button>
                     </div>
@@ -407,28 +421,28 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
             </section>
         ),
         experience: () => (
-            <section id="editor-section-experience" className="space-y-4 pt-4 border-b border-gray-100 dark:border-slate-800 pb-6">
+            <section id="editor-section-experience" className="space-y-4 pt-4 border-b border-slate-200/40 dark:border-slate-800/40 pb-6">
                 <SectionHeader title="Experience" icon={Briefcase} sectionKey="experience" visibilityKey="experience" onAdd={addExperience} draggable />
                 {expanded['experience'] && (
-                    <div className="space-y-6 px-2">
+                    <div className="space-y-6 px-1">
                         {data.experience.map((exp) => (
-                            <div key={exp.id} className="border border-gray-200 dark:border-slate-700 p-5 rounded-xl bg-gray-50/50 dark:bg-slate-800/30 relative group transition-all w-full hover:shadow-sm">
-                                <button onClick={() => removeExperience(exp.id)} className="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors bg-white dark:bg-slate-900 rounded-full p-1.5 shadow-sm border border-gray-100 dark:border-slate-700"><Trash2 className="w-4 h-4" /></button>
+                            <div key={exp.id} className="border border-slate-200/60 dark:border-slate-800/50 p-6 rounded-2xl bg-white/40 dark:bg-slate-900/20 relative group transition-all w-full hover:shadow-md hover:border-slate-350 dark:hover:border-slate-700">
+                                <button onClick={() => removeExperience(exp.id)} className="absolute top-5 right-5 text-slate-300 hover:text-red-500 transition-colors bg-white dark:bg-slate-950 rounded-xl p-2 shadow-sm border border-slate-100 dark:border-slate-800 hover:scale-105 active:scale-95"><Trash2 className="w-4 h-4" /></button>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 pr-10">
                                     <div>
-                                        <label className="text-xs font-semibold text-gray-500 mb-1.5 block">Job Title</label>
+                                        <label className="text-xs font-bold text-slate-500 mb-1.5 block">Job Title</label>
                                         <input value={exp.jobTitle} onChange={(e) => updateExperience(exp.id, 'jobTitle', e.target.value)} placeholder="e.g. Senior Developer" className="input-field font-semibold" />
                                     </div>
                                     <div>
-                                        <label className="text-xs font-semibold text-gray-500 mb-1.5 block">Company</label>
+                                        <label className="text-xs font-bold text-slate-500 mb-1.5 block">Company</label>
                                         <input value={exp.company} onChange={(e) => updateExperience(exp.id, 'company', e.target.value)} placeholder="e.g. Google" className="input-field" />
                                     </div>
                                     <div>
-                                        <label className="text-xs font-semibold text-gray-500 mb-1.5 block">Start Date</label>
+                                        <label className="text-xs font-bold text-slate-500 mb-1.5 block">Start Date</label>
                                         <input value={exp.startDate} onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)} placeholder="MM/YYYY" className="input-field" />
                                     </div>
                                     <div>
-                                        <label className="text-xs font-semibold text-gray-500 mb-1.5 block">End Date</label>
+                                        <label className="text-xs font-bold text-slate-500 mb-1.5 block">End Date</label>
                                         <input value={exp.endDate} onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)} placeholder="MM/YYYY or Present" className="input-field" />
                                     </div>
                                 </div>
@@ -437,16 +451,16 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
                                 <div className="mb-4">
                                     <button
                                         onClick={() => toggleTailor(exp.id)}
-                                        className="text-xs flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-bold hover:underline mb-3"
+                                        className="text-xs flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-bold hover:underline mb-3"
                                     >
                                         <Settings2 className="w-3.5 h-3.5" />
                                         {tailorOpen[exp.id] ? "Hide AI Tailoring Settings" : "Tailor AI Suggestions (Optional)"}
                                     </button>
 
                                     {tailorOpen[exp.id] && (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-white dark:bg-slate-800 rounded-lg border border-gray-100 dark:border-slate-700 mb-4 animate-in slide-in-from-top-2 duration-200">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-white/70 dark:bg-slate-950/70 rounded-xl border border-slate-200/50 dark:border-slate-800/50 mb-4 animate-in slide-in-from-top-2 duration-200">
                                             <div>
-                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Target Job Role</label>
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Target Job Role</label>
                                                 <input
                                                     value={exp.targetRole || ""}
                                                     onChange={(e) => updateExperience(exp.id, 'targetRole', e.target.value)}
@@ -455,7 +469,7 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Custom Keywords</label>
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Custom Keywords</label>
                                                 <input
                                                     value={exp.targetKeywords || ""}
                                                     onChange={(e) => updateExperience(exp.id, 'targetKeywords', e.target.value)}
@@ -468,49 +482,49 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
                                 </div>
 
                                 <div className="relative w-full">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1.5 block">Description</label>
+                                    <label className="text-xs font-bold text-slate-500 mb-1.5 block">Description</label>
                                     <textarea
                                         value={exp.description}
                                         onChange={(e) => updateExperience(exp.id, 'description', e.target.value)}
                                         placeholder="• Achieved X by doing Y..."
                                         rows={5}
-                                        className="input-textarea min-h-[120px]"
+                                        className="input-textarea min-h-[120px] pb-10"
                                     />
                                     <button
                                         onClick={() => handleExperienceGenerate(exp)}
                                         disabled={loadingField === `exp-${exp.id}`}
-                                        className="absolute bottom-3 right-3 text-[10px] bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 px-3 py-1.5 rounded-full flex items-center gap-1.5 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition font-bold border border-indigo-100 dark:border-indigo-800 hover:scale-105"
+                                        className="absolute bottom-3 right-3 text-[10px] bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0_4px_10px_rgba(99,102,241,0.2)] transition font-bold border border-violet-500/20 hover:scale-105 active:scale-95 duration-200 cursor-pointer disabled:opacity-50"
                                     >
-                                        {loadingField === `exp-${exp.id}` ? <Loader2 className="animate-spin w-3 h-3" /> : <Wand2 className="w-3 h-3" />}
+                                        {loadingField === `exp-${exp.id}` ? <Loader2 className="animate-spin w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
                                         {exp.description && exp.description.length > 15 ? 'Refine with AI' : 'Generate with AI'}
                                     </button>
                                 </div>
                             </div>
                         ))}
-                        {data.experience.length === 0 && <div className="text-center text-gray-400 py-4 italic text-sm">No experience added yet. Click "Add" to start.</div>}
+                        {data.experience.length === 0 && <div className="text-center text-slate-500 py-6 italic text-sm border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-white/20 dark:bg-slate-900/10">No experience added yet. Click "Add" to start.</div>}
                     </div>
                 )}
             </section>
         ),
         projects: () => (
-            <section id="editor-section-projects" className="space-y-4 pt-4 border-b border-gray-100 dark:border-slate-800 pb-6">
+            <section id="editor-section-projects" className="space-y-4 pt-4 border-b border-slate-200/40 dark:border-slate-800/40 pb-6">
                 <SectionHeader title="Projects" icon={Code} sectionKey="projects" visibilityKey="projects" onAdd={addProject} draggable />
                 {expanded['projects'] && (
-                    <div className="space-y-6 px-2">
+                    <div className="space-y-6 px-1">
                         {data.projects.map((proj) => (
-                            <div key={proj.id} className="border border-gray-200 dark:border-slate-700 p-5 rounded-xl bg-gray-50/50 dark:bg-slate-800/30 relative group transition-all w-full hover:shadow-sm">
-                                <button onClick={() => removeProject(proj.id)} className="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors bg-white dark:bg-slate-900 rounded-full p-1.5 shadow-sm border border-gray-100 dark:border-slate-700"><Trash2 className="w-4 h-4" /></button>
+                            <div key={proj.id} className="border border-slate-200/60 dark:border-slate-800/50 p-6 rounded-2xl bg-white/40 dark:bg-slate-900/20 relative group transition-all w-full hover:shadow-md hover:border-slate-350 dark:hover:border-slate-700">
+                                <button onClick={() => removeProject(proj.id)} className="absolute top-5 right-5 text-slate-300 hover:text-red-500 transition-colors bg-white dark:bg-slate-950 rounded-xl p-2 shadow-sm border border-slate-100 dark:border-slate-800 hover:scale-105 active:scale-95"><Trash2 className="w-4 h-4" /></button>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 pr-10">
                                     <input value={proj.name} onChange={(e) => updateProject(proj.id, 'name', e.target.value)} placeholder="Project Name" className="input-field font-semibold" />
-                                    <input value={proj.link || ''} onChange={(e) => updateProject(proj.id, 'link', e.target.value)} placeholder="Project Link (URL)" className="input-field text-blue-500" />
+                                    <input value={proj.link || ''} onChange={(e) => updateProject(proj.id, 'link', e.target.value)} placeholder="Project Link (URL)" className="input-field text-indigo-500 font-semibold" />
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Stack (e.g. React, Go)</label>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Stack (e.g. React, Go)</label>
                                         <input value={proj.technologies || ''} onChange={(e) => updateProject(proj.id, 'technologies', e.target.value)} placeholder="Technologies Used" className="input-field py-2" />
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Project Goal/Problem Solved</label>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Project Goal/Problem Solved</label>
                                         <input value={proj.goals || ''} onChange={(e) => updateProject(proj.id, 'goals', e.target.value)} placeholder="e.g. Optimize image processing" className="input-field py-2" />
                                     </div>
                                 </div>
@@ -520,44 +534,44 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
                                         onChange={(e) => updateProject(proj.id, 'description', e.target.value)}
                                         placeholder="Describe the project..."
                                         rows={4}
-                                        className="input-textarea min-h-[100px]"
+                                        className="input-textarea min-h-[100px] pb-10"
                                     />
                                     <button
                                         onClick={() => handleProjectGenerate(proj)}
                                         disabled={loadingField === `proj-${proj.id}`}
-                                        className="absolute bottom-3 right-3 text-[10px] bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 px-3 py-1.5 rounded-full flex items-center gap-1.5 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition font-bold border border-indigo-100 dark:border-indigo-800 hover:scale-105"
+                                        className="absolute bottom-3 right-3 text-[10px] bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0_4px_10px_rgba(99,102,241,0.2)] transition font-bold border border-violet-500/20 hover:scale-105 active:scale-95 duration-200 cursor-pointer disabled:opacity-50"
                                     >
-                                        {loadingField === `proj-${proj.id}` ? <Loader2 className="animate-spin w-3 h-3" /> : <Wand2 className="w-3 h-3" />}
+                                        {loadingField === `proj-${proj.id}` ? <Loader2 className="animate-spin w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
                                         Generate Bullets with AI
                                     </button>
                                 </div>
                             </div>
                         ))}
-                        {data.projects.length === 0 && <div className="text-center text-gray-400 py-4 italic text-sm">No projects added yet.</div>}
+                        {data.projects.length === 0 && <div className="text-center text-slate-500 py-6 italic text-sm border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-white/20 dark:bg-slate-900/10">No projects added yet.</div>}
                     </div>
                 )}
             </section>
         ),
         education: () => (
-            <section id="editor-section-education" className="space-y-4 pt-4 border-b border-gray-100 dark:border-slate-800 pb-6">
+            <section id="editor-section-education" className="space-y-4 pt-4 border-b border-slate-200/40 dark:border-slate-800/40 pb-6">
                 <SectionHeader title="Education" icon={GraduationCap} sectionKey="education" visibilityKey="education" onAdd={addEducation} draggable />
                 {expanded['education'] && (
-                    <div className="space-y-4 px-2">
+                    <div className="space-y-4 px-1">
                         {data.education.map((edu) => (
-                            <div key={edu.id} className="border border-gray-200 dark:border-slate-700 p-5 rounded-xl bg-gray-50/50 dark:bg-slate-800/30 relative group transition-all w-full">
-                                <button onClick={() => removeEducation(edu.id)} className="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors bg-white dark:bg-slate-900 rounded-full p-1.5 shadow-sm border border-gray-100 dark:border-slate-700"><Trash2 className="w-4 h-4" /></button>
+                            <div key={edu.id} className="border border-slate-200/60 dark:border-slate-800/50 p-6 rounded-2xl bg-white/40 dark:bg-slate-900/20 relative group transition-all w-full hover:border-slate-350 dark:hover:border-slate-700 hover:shadow-sm">
+                                <button onClick={() => removeEducation(edu.id)} className="absolute top-5 right-5 text-slate-300 hover:text-red-500 transition-colors bg-white dark:bg-slate-950 rounded-xl p-2 shadow-sm border border-slate-100 dark:border-slate-800 hover:scale-105 active:scale-95"><Trash2 className="w-4 h-4" /></button>
                                 <div className="grid grid-cols-1 gap-4 pr-8">
                                     <div>
-                                        <label className="text-xs font-semibold text-gray-500 mb-1 block">Degree</label>
+                                        <label className="text-xs font-bold text-slate-500 mb-1 block">Degree</label>
                                         <input value={edu.degree} onChange={(e) => updateEducation(edu.id, 'degree', e.target.value)} placeholder="e.g. Bachelor of Science in CS" className="input-field font-semibold" />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div className="md:col-span-2">
-                                            <label className="text-xs font-semibold text-gray-500 mb-1 block">School</label>
+                                            <label className="text-xs font-bold text-slate-500 mb-1 block">School</label>
                                             <input value={edu.school} onChange={(e) => updateEducation(edu.id, 'school', e.target.value)} placeholder="University Name" className="input-field" />
                                         </div>
                                         <div>
-                                            <label className="text-xs font-semibold text-gray-500 mb-1 block">Year</label>
+                                            <label className="text-xs font-bold text-slate-500 mb-1 block">Year</label>
                                             <input value={edu.graduationDate} onChange={(e) => updateEducation(edu.id, 'graduationDate', e.target.value)} placeholder="Graduation Year" className="input-field" />
                                         </div>
                                     </div>
@@ -569,14 +583,14 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
             </section>
         ),
         references: () => (
-            <section id="editor-section-references" className="space-y-4 pt-4 border-b border-gray-100 dark:border-slate-800 pb-6">
+            <section id="editor-section-references" className="space-y-4 pt-4 border-b border-slate-200/40 dark:border-slate-800/40 pb-6">
                 <SectionHeader title="References" icon={Users} sectionKey="references" visibilityKey="references" onAdd={addReference} draggable />
                 {expanded['references'] && (
-                    <div className="space-y-4 px-2">
+                    <div className="space-y-4 px-1">
                         {data.references.map((ref) => (
-                            <div key={ref.id} className="border border-gray-200 dark:border-slate-700 p-5 rounded-xl bg-gray-50/50 dark:bg-slate-800/30 relative group transition-all w-full">
-                                <button onClick={() => removeReference(ref.id)} className="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors bg-white dark:bg-slate-900 rounded-full p-1.5 shadow-sm border border-gray-100 dark:border-slate-700"><Trash2 className="w-4 h-4" /></button>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div key={ref.id} className="border border-slate-200/60 dark:border-slate-800/50 p-6 rounded-2xl bg-white/40 dark:bg-slate-900/20 relative group transition-all w-full hover:border-slate-350 dark:hover:border-slate-700 hover:shadow-sm">
+                                <button onClick={() => removeReference(ref.id)} className="absolute top-5 right-5 text-slate-300 hover:text-red-500 transition-colors bg-white dark:bg-slate-950 rounded-xl p-2 shadow-sm border border-slate-100 dark:border-slate-800 hover:scale-105 active:scale-95"><Trash2 className="w-4 h-4" /></button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 pr-10">
                                     <input value={ref.name} onChange={(e) => updateReference(ref.id, 'name', e.target.value)} placeholder="Reference Name" className="input-field font-semibold" />
                                     <input value={ref.company} onChange={(e) => updateReference(ref.id, 'company', e.target.value)} placeholder="Company" className="input-field" />
                                 </div>
@@ -591,11 +605,11 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
             </section>
         ),
         skills: () => (
-            <section id="editor-section-skills" className="pb-4 pt-4 border-b border-gray-100 dark:border-slate-800">
+            <section id="editor-section-skills" className="pb-4 pt-4 border-b border-slate-200/40 dark:border-slate-800/40">
                 <SectionHeader title="Skills" icon={Award} sectionKey="skills" visibilityKey="skills" draggable />
                 {expanded['skills'] && (
-                    <div className="px-2 relative">
-                        <p className="text-xs text-gray-500 mb-2">Separate skills with commas</p>
+                    <div className="px-1 relative">
+                        <p className="text-xs text-slate-400 mb-2 font-medium">Separate skills with commas</p>
                         <textarea
                             value={data.skills.join(", ")}
                             onChange={(e) => handleListChange('skills', e.target.value)}
@@ -606,21 +620,21 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
 
                         {/* Suggestions Area */}
                         {suggestedSkills.length > 0 && (
-                            <div className="mt-3 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-800">
-                                <div className="flex justify-between items-center mb-2">
-                                    <h4 className="text-xs font-bold text-blue-700 dark:text-blue-300 flex items-center gap-1.5">
-                                        <Sparkles className="w-3 h-3" /> AI Suggestions
+                            <div className="mt-3 bg-indigo-50/50 dark:bg-indigo-950/20 p-4 rounded-xl border border-indigo-100/30 dark:border-indigo-800/40 shadow-sm animate-in slide-in-from-bottom-2 duration-300">
+                                <div className="flex justify-between items-center mb-3">
+                                    <h4 className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                                        <Sparkles className="w-3.5 h-3.5" /> AI Suggested Skills
                                     </h4>
-                                    <button onClick={() => setSuggestedSkills([])} className="text-[10px] text-gray-500 hover:text-gray-700">Clear</button>
+                                    <button onClick={() => setSuggestedSkills([])} className="text-[10px] font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-wider">Clear</button>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     {suggestedSkills.map((skill, idx) => (
                                         <button
                                             key={idx}
                                             onClick={() => addSuggestedSkill(skill)}
-                                            className="text-xs bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700 text-gray-700 dark:text-gray-200 px-2 py-1 rounded hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors flex items-center gap-1"
+                                            className="text-xs bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60 text-slate-700 dark:text-slate-200 px-3 py-1 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:border-indigo-300 transition-all flex items-center gap-1 shadow-sm cursor-pointer hover:scale-105 active:scale-95"
                                         >
-                                            <Plus className="w-3 h-3 text-blue-500" /> {skill}
+                                            <Plus className="w-3.5 h-3.5 text-indigo-500" /> {skill}
                                         </button>
                                     ))}
                                 </div>
@@ -630,9 +644,9 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
                         <button
                             onClick={handleSkillsGenerate}
                             disabled={loadingField === 'skills'}
-                            className="absolute bottom-3 right-3 text-[10px] bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 px-3 py-1.5 rounded-full flex items-center gap-1.5 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition font-bold border border-indigo-100 dark:border-indigo-800 hover:scale-105"
+                            className="absolute bottom-3 right-3 text-[10px] bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0_4px_10px_rgba(99,102,241,0.2)] transition font-bold border border-violet-500/20 hover:scale-105 active:scale-95 duration-200 cursor-pointer disabled:opacity-50"
                         >
-                            {loadingField === 'skills' ? <Loader2 className="animate-spin w-3 h-3" /> : <Wand2 className="w-3 h-3" />}
+                            {loadingField === 'skills' ? <Loader2 className="animate-spin w-3.5 h-3.5" /> : <Sparkles className="w-3.5 h-3.5" />}
                             AI Suggest
                         </button>
                     </div>
@@ -640,11 +654,11 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
             </section>
         ),
         languages: () => (
-            <section id="editor-section-languages" className="pb-4 pt-4 border-b border-gray-100 dark:border-slate-800">
+            <section id="editor-section-languages" className="pb-4 pt-4 border-b border-slate-200/40 dark:border-slate-800/40">
                 <SectionHeader title="Languages" icon={Languages} sectionKey="languages" visibilityKey="languages" draggable />
                 {expanded['languages'] && (
-                    <div className="px-2">
-                        <p className="text-xs text-gray-500 mb-2">Separate languages with commas</p>
+                    <div className="px-1">
+                        <p className="text-xs text-slate-400 mb-2 font-medium">Separate languages with commas</p>
                         <textarea
                             value={data.languages.join(", ")}
                             onChange={(e) => handleListChange('languages', e.target.value)}
@@ -657,11 +671,11 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
             </section>
         ),
         activities: () => (
-            <section id="editor-section-activities" className="pb-4 pt-4 border-b border-gray-100 dark:border-slate-800">
+            <section id="editor-section-activities" className="pb-4 pt-4 border-b border-slate-200/40 dark:border-slate-800/40">
                 <SectionHeader title="Activities" icon={Award} sectionKey="activities" visibilityKey="activities" draggable />
                 {expanded['activities'] && (
-                    <div className="px-2">
-                        <p className="text-xs text-gray-500 mb-2">Volunteering, Hobbies, Certifications</p>
+                    <div className="px-1">
+                        <p className="text-xs text-slate-400 mb-2 font-medium">Volunteering, Hobbies, Certifications</p>
                         <textarea
                             value={data.activities.join(", ")}
                             onChange={(e) => handleListChange('activities', e.target.value)}
@@ -676,60 +690,60 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
     };
 
     return (
-        <div className="space-y-2 bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-slate-800 w-full">
+        <div className="space-y-4 glass-panel rounded-3xl p-6 md:p-8 w-full relative overflow-hidden border border-slate-250/20 dark:border-slate-800/30">
 
             {/* Editor Header */}
-            <div className="flex justify-between items-center border-b border-gray-100 dark:border-slate-800 pb-6 mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/40 dark:border-slate-800/40 pb-6 mb-2">
                 <div>
-                    <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                    <h2 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
                         Resume Editor
                     </h2>
-                    <p className="text-sm text-gray-500 mt-1">Fill in details. Drag sections to reorder.</p>
+                    <p className="text-xs text-slate-400 font-medium mt-1">Complete your professional background. Drag sections to rearrange.</p>
                 </div>
-                <div className="flex items-center gap-3 bg-gray-50 dark:bg-slate-800 px-3 py-1.5 rounded-full border dark:border-slate-700">
-                    <label htmlFor="accentColor" className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Color</label>
+                <div className="flex items-center gap-3 bg-white/40 dark:bg-slate-900/40 px-4 py-2 rounded-2xl border border-slate-200/50 dark:border-slate-850/60 shadow-inner">
+                    <label htmlFor="accentColor" className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Accent</label>
                     <input
                         type="color"
                         id="accentColor"
                         value={data.accentColor}
                         onChange={(e) => onChange({ ...data, accentColor: e.target.value })}
-                        className="w-6 h-6 p-0 border-0 rounded-full cursor-pointer overflow-hidden"
+                        className="w-7 h-7 p-0 border-0 rounded-xl cursor-pointer overflow-hidden shadow-md transform hover:scale-110 active:scale-95 transition-all"
                     />
                 </div>
             </div>
 
             {/* Personal Info (Static Top) */}
-            <section id="editor-section-personal" className="animate-fade-in border-b border-gray-100 dark:border-slate-800 pb-6">
+            <section id="editor-section-personal" className="animate-fade-in border-b border-slate-200/40 dark:border-slate-800/40 pb-6">
                 <div
-                    className={`flex justify-between items-center cursor-pointer py-3 select-none rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors px-2 -mx-2 ${expanded['personal'] ? 'bg-gray-50 dark:bg-slate-800/50 mb-4' : ''}`}
+                    className={`flex justify-between items-center cursor-pointer py-3 select-none rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-all duration-300 px-3 -mx-3 border border-transparent ${expanded['personal'] ? 'bg-slate-50/80 dark:bg-slate-800/20 border-slate-100/50 dark:border-slate-800/40 shadow-sm mb-4' : ''}`}
                     onClick={() => toggleExpanded('personal')}
                 >
                     <div className="flex items-center gap-3">
-                        <button className="text-gray-400 hover:text-blue-600">
+                        <button className="text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-all">
                             {expanded['personal'] ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                         </button>
                         <div className="flex items-center gap-2">
-                            <User className="w-4 h-4 text-blue-500" />
-                            <h3 className="text-base font-bold text-gray-800 dark:text-gray-100">Personal Details</h3>
+                            <User className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+                            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 tracking-wide uppercase">Personal Details</h3>
                         </div>
                     </div>
                 </div>
 
                 {expanded['personal'] && (
-                    <div className="space-y-6 px-2">
-                        <div className="flex flex-col md:flex-row items-start gap-8">
+                    <div className="space-y-6 px-1">
+                        <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
                             {/* Image Upload */}
                             <div className="flex flex-col items-center gap-2">
-                                <div className="relative group w-24 h-24 bg-white dark:bg-slate-800 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 dark:border-slate-700 hover:border-blue-500 transition-all shadow-sm mx-auto md:mx-0">
+                                <div className="relative group w-28 h-28 bg-white/50 dark:bg-slate-900/50 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-dashed border-slate-300 dark:border-slate-750 hover:border-indigo-500 hover:scale-102 transition-all shadow-sm">
                                     {data.personalInfo.profilePicture ? (
                                         <img src={data.personalInfo.profilePicture} alt="Profile" className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="text-center p-2">
-                                            <Upload className="w-6 h-6 text-gray-400 mx-auto mb-1" />
-                                            <span className="text-[10px] text-gray-400 leading-none block font-medium">Add Photo</span>
+                                            <Upload className="w-6 h-6 text-slate-400 mx-auto mb-1.5" />
+                                            <span className="text-[10px] text-slate-400 leading-none block font-bold">Add Photo</span>
                                         </div>
                                     )}
-                                    <label className="absolute inset-0 cursor-pointer flex items-center justify-center bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium backdrop-blur-sm">
+                                    <label className="absolute inset-0 cursor-pointer flex items-center justify-center bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-all text-xs font-bold backdrop-blur-sm">
                                         <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                                         Change
                                     </label>
@@ -737,9 +751,9 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
                                 {data.personalInfo.profilePicture && (
                                     <button
                                         onClick={() => onChange({ ...data, personalInfo: { ...data.personalInfo, profilePicture: '' } })}
-                                        className="text-[10px] text-red-500 hover:underline"
+                                        className="text-[10px] text-red-500 hover:text-red-655 hover:underline font-bold transition-all"
                                     >
-                                        Remove
+                                        Remove Photo
                                     </button>
                                 )}
                             </div>
@@ -757,18 +771,18 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSectionFocus, expande
                             </div>
                         </div>
 
-                        <div className="space-y-3 pt-4 bg-gray-50/50 dark:bg-slate-800/30 p-4 rounded-xl border border-dashed border-gray-200 dark:border-slate-700">
-                            <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Social Profiles</h4>
+                        <div className="space-y-4 pt-4 bg-slate-50/50 dark:bg-slate-900/10 p-5 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+                            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">Social Profiles</h4>
                             {data.personalInfo.customLinks.map(link => (
-                                <div key={link.id} className="flex flex-col md:flex-row gap-3 items-center">
+                                <div key={link.id} className="flex flex-col md:flex-row gap-3 items-center w-full">
                                     <input value={link.platform} onChange={(e) => updateCustomLink(link.id, 'platform', e.target.value)} placeholder="Platform (e.g. LinkedIn)" className="input-field md:w-1/3" />
                                     <div className="flex w-full md:flex-1 gap-2">
                                         <input value={link.url} onChange={(e) => updateCustomLink(link.id, 'url', e.target.value)} placeholder="URL" className="input-field" />
-                                        <button onClick={() => removeCustomLink(link.id)} className="text-gray-400 hover:text-red-500 p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"><Trash2 className="w-4 h-4" /></button>
+                                        <button onClick={() => removeCustomLink(link.id)} className="text-slate-400 hover:text-red-500 p-2 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-all cursor-pointer"><Trash2 className="w-4 h-4" /></button>
                                     </div>
                                 </div>
                             ))}
-                            <button onClick={addCustomLink} className="text-xs text-blue-600 dark:text-blue-400 font-bold flex items-center gap-1 hover:underline mt-2"><Plus className="w-3 h-3" /> Add Another Link</button>
+                            <button onClick={addCustomLink} className="text-xs text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-1 hover:underline mt-2 cursor-pointer"><Plus className="w-3.5 h-3.5" /> Add Another Social Profile</button>
                         </div>
                     </div>
                 )}

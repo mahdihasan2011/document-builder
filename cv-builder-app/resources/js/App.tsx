@@ -9,12 +9,14 @@ import AuthModal from './components/AuthModal';
 import { apiService } from './services/apiService';
 import { Download, Moon, Sun, Menu, X, Sparkles, Eye, Check, Edit2, ChevronRight, LayoutTemplate, LogIn, LogOut, Save, Loader2 } from 'lucide-react';
 
+const APP_NAME = import.meta.env.VITE_APP_NAME || 'ATS Friendly Resume Builder';
+
 const Footer = () => (
     <footer className="bg-slate-900 text-white py-12 border-t border-slate-800 relative z-10 mt-auto">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
             <div className="col-span-1 md:col-span-2 space-y-4">
                 <div className="flex items-center gap-2 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                    <Sparkles className="w-6 h-6 text-blue-400" /> BD METRIX <span className="text-slate-400">(ATS Friendly Resume Builder)</span>
+                    <Sparkles className="w-6 h-6 text-blue-400" /> <span className="text-slate-400">{APP_NAME}</span>
                 </div>
                 <p className="text-slate-400 max-w-sm leading-relaxed">
                     The ultimate AI-powered resume builder helping thousands of professionals land their dream jobs with ATS-optimized templates.
@@ -284,10 +286,10 @@ const MobilePreviewModal = ({
 };
 
 const AdBanner = ({ position }: { position: string }) => (
-    <div className="w-full bg-gray-50 dark:bg-slate-900/50 py-6 flex justify-center border-y border-gray-200 dark:border-slate-800">
-        <div className="w-[728px] max-w-[90vw] h-[90px] bg-white dark:bg-slate-800 flex flex-col items-center justify-center text-gray-400 dark:text-slate-500 text-xs border border-dashed border-gray-300 dark:border-slate-700 rounded-lg shadow-sm">
-            <span className="font-semibold uppercase tracking-wider mb-1">Sponsored</span>
-            <span>Ad Space ({position})</span>
+    <div className="w-full bg-slate-50/50 dark:bg-slate-900/30 py-3 sm:py-6 flex justify-center border-b border-slate-200/50 dark:border-slate-800/40 mt-20 sm:mt-24 backdrop-blur-sm relative z-10">
+        <div className="w-[728px] max-w-[92vw] h-[55px] sm:h-[90px] bg-white/60 dark:bg-slate-900/40 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 text-[10px] sm:text-xs border border-dashed border-slate-200 dark:border-slate-850 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.01)] backdrop-blur-md">
+            <span className="font-bold uppercase tracking-wider mb-0.5 sm:mb-1 text-[8px] sm:text-[10px] text-indigo-500 dark:text-indigo-400">Sponsored</span>
+            <span className="font-semibold text-slate-500 dark:text-slate-400">Ad Space ({position})</span>
         </div>
     </div>
 );
@@ -464,18 +466,12 @@ const App: React.FC = () => {
     useLayoutEffect(() => {
         const handleResize = () => {
             if (previewContainerRef.current) {
-                const { clientWidth, clientHeight } = previewContainerRef.current;
-                const padding = 32; // Reduced padding for better fit
+                const { clientWidth } = previewContainerRef.current;
+                const padding = 32; // Standard padding for borders
                 const a4Width = 794;
-                const a4Height = 1123;
 
                 const availableWidth = clientWidth - padding;
-                const availableHeight = clientHeight - padding;
-
-                const scaleW = availableWidth / a4Width;
-                const scaleH = availableHeight / a4Height;
-
-                const scale = Math.min(scaleW, scaleH, 1.0);
+                const scale = Math.min(availableWidth / a4Width, 1.0);
                 setPreviewScale(scale);
             }
         };
@@ -674,7 +670,15 @@ const App: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen font-sans text-slate-900 dark:text-slate-100 transition-colors duration-300 bg-gray-50 dark:bg-slate-950">
+        <div className="flex flex-col min-h-screen font-sans text-[var(--text-main)] transition-colors duration-300 bg-[var(--bg-app)] relative overflow-hidden">
+
+            {/* Glowing Ambient Lighting & Mesh Grids */}
+            <div className="ambient-glow-container select-none">
+                <div className="ambient-glow ambient-glow-1"></div>
+                <div className="ambient-glow ambient-glow-2"></div>
+                <div className="ambient-glow ambient-glow-3"></div>
+                <div className="bg-grid-pattern"></div>
+            </div>
 
             {/* Mobile Drawer (High Z-Index, Outside main flow) */}
             <div
@@ -682,43 +686,43 @@ const App: React.FC = () => {
             >
                 {/* Backdrop */}
                 <div
-                    className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
+                    className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
 
                 {/* Drawer Content */}
                 <div
                     className={`
-                absolute top-0 left-0 h-full w-72 bg-white dark:bg-slate-900 shadow-2xl transform transition-transform duration-300 flex flex-col border-r border-gray-200 dark:border-slate-800
+                absolute top-0 left-0 h-full w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-2xl transform transition-transform duration-300 flex flex-col border-r border-gray-200/50 dark:border-slate-800/50
                 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
             `}
                 >
                     {/* Mobile Header */}
-                    <div className="p-4 border-b border-gray-100 dark:border-slate-800 flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
+                    <div className="p-4 border-b border-gray-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
                         <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide flex items-center gap-2">
-                            <LayoutTemplate className="w-4 h-4 text-blue-500" />
+                            <LayoutTemplate className="w-4 h-4 text-indigo-500" />
                             Templates
                         </h2>
-                        <button onClick={() => setIsMobileMenuOpen(false)} className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-500">
+                        <button onClick={() => setIsMobileMenuOpen(false)} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 transition-colors">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
 
                     {/* User Info Mobile */}
                     {user ? (
-                        <div className="p-4 bg-blue-50 dark:bg-slate-800/50 border-b border-gray-100 dark:border-slate-800 flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                        <div className="p-4 bg-indigo-50/50 dark:bg-indigo-950/20 border-b border-gray-100 dark:border-slate-800 flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
                                 {user.name ? user.name[0] : 'U'}
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{user.name || 'User'}</p>
                                 <p className="text-xs text-gray-500 truncate">{user.phone}</p>
                             </div>
-                            <button onClick={handleLogout} className="text-gray-400 hover:text-red-500"><LogOut className="w-4 h-4" /></button>
+                            <button onClick={handleLogout} className="text-gray-400 hover:text-red-500 p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"><LogOut className="w-4 h-4" /></button>
                         </div>
                     ) : (
                         <div className="p-4 border-b border-gray-100 dark:border-slate-800">
-                            <button onClick={() => { setIsAuthModalOpen(true); setIsMobileMenuOpen(false); }} className="w-full py-2 bg-blue-600 text-white rounded-lg font-bold text-sm">
+                            <button onClick={() => { setIsAuthModalOpen(true); setIsMobileMenuOpen(false); }} className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-md shadow-indigo-500/10 hover:shadow-lg transition-all">
                                 Login / Signup
                             </button>
                         </div>
@@ -731,16 +735,16 @@ const App: React.FC = () => {
                                 key={t.id}
                                 onClick={() => { setSelectedTemplateId(t.id); setIsMobileMenuOpen(false); }}
                                 className={`
-                            w-full text-left px-3 py-3 rounded-lg font-medium transition-all flex items-center justify-between group
+                            w-full text-left px-3 py-3 rounded-xl font-medium transition-all flex items-center justify-between group
                             ${selectedTemplateId === t.id
-                                        ? 'bg-blue-600 text-white shadow-md'
-                                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+                                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+                                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-slate-800/80'
                                     }
                         `}
                             >
                                 <div className="flex items-center gap-3">
                                     <TemplateThumbnail id={t.id} selected={selectedTemplateId === t.id} />
-                                    <span className="truncate">{t.name}</span>
+                                    <span className="truncate text-sm font-semibold">{t.name}</span>
                                 </div>
                                 {selectedTemplateId === t.id && <Check className="w-4 h-4" />}
                                 {selectedTemplateId !== t.id && <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-50 transition-opacity" />}
@@ -749,167 +753,182 @@ const App: React.FC = () => {
                     </div>
                 </div>
             </div>
-
             {/* Navbar */}
             <nav
-                className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled
-                    ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-slate-800 py-3'
-                    : 'bg-transparent py-4'
+                className={`fixed top-0 w-full z-50 transition-all duration-500 ${isScrolled
+                    ? 'bg-white/80 dark:bg-slate-950/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/40 py-3 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_35px_-10px_rgba(0,0,0,0.3)]'
+                    : 'bg-transparent py-5'
                     }`}
             >
                 <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
                     <div
-                        className="flex items-center gap-2 text-2xl font-bold cursor-pointer group"
+                        className="flex items-center gap-2.5 sm:gap-3 text-lg sm:text-2xl font-bold cursor-pointer group"
                         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                     >
-                        <div className="bg-blue-600 text-white p-1.5 rounded-lg group-hover:rotate-12 transition-transform">
-                            <Sparkles className="w-5 h-5" />
+                        <div className="bg-indigo-600 dark:bg-indigo-500 text-white p-2 rounded-xl group-hover:rotate-6 group-hover:scale-105 transition-all shadow-[0_4px_15px_-3px_rgba(99,102,241,0.4)] group-hover:shadow-[0_6px_20px_-3px_rgba(99,102,241,0.6)] flex-shrink-0">
+                            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
                         </div>
-                        <span className={`bg-clip-text text-transparent bg-gradient-to-r ${isScrolled ? 'from-slate-800 to-slate-600 dark:from-white dark:to-slate-300' : 'from-white to-blue-100'}`}>BD METRIX</span>
+                        <span className={`font-extrabold tracking-tight ${isScrolled ? 'text-slate-900 dark:text-slate-100' : 'text-slate-900 dark:text-white'}`}>
+                            <span className="inline md:hidden text-base sm:text-lg">{APP_NAME}</span>
+                            <span className="hidden md:inline">{APP_NAME}</span>
+                        </span>
                     </div>
 
-                    <div className="flex items-center gap-3 md:gap-4">
+                    <div className="flex items-center gap-1.5 sm:gap-3 md:gap-4">
                         {/* Mobile controls */}
-                        <div className="flex lg:hidden items-center gap-2">
-                            {isSaving && <Loader2 className="w-4 h-4 animate-spin text-blue-500" />}
+                        <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
+                            {isSaving && <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-500 mr-0.5" />}
                             <button
                                 onClick={() => setShowDownloadModal(true)}
-                                className={`p-2 rounded-full transition ${isScrolled ? 'text-green-600 bg-green-50' : 'text-white bg-white/20'}`}
+                                className={`p-2 rounded-xl transition-all active:scale-90 bg-white/60 dark:bg-slate-900/40 border border-slate-200/40 dark:border-slate-800/30 text-emerald-600 dark:text-emerald-450`}
                                 title="Download PDF"
                             >
-                                <Download className="w-5 h-5" />
+                                <Download className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
 
                             <button
                                 onClick={() => setShowMobilePreview(true)}
-                                className={`p-2 rounded-full transition ${isScrolled ? 'text-blue-600 bg-blue-50' : 'text-white bg-white/20'}`}
+                                className={`p-2 rounded-xl transition-all active:scale-90 bg-white/60 dark:bg-slate-900/40 border border-slate-200/40 dark:border-slate-800/30 text-indigo-600 dark:text-indigo-400`}
                                 title="Preview Resume"
                             >
-                                <Eye className="w-5 h-5" />
+                                <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
 
                             <button
                                 onClick={toggleTheme}
-                                className={`p-2 rounded-full transition ${isScrolled ? 'text-slate-600' : 'text-white'}`}
+                                className={`p-2 rounded-xl transition-all active:scale-90 hover:rotate-12 bg-white/60 dark:bg-slate-900/40 border border-slate-200/40 dark:border-slate-800/30`}
                             >
-                                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                                {isDarkMode ? <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-500" />}
                             </button>
                             <button
                                 onClick={() => { setIsMobileMenuOpen(true); }}
-                                className={`p-2 rounded-lg transition ${isScrolled ? 'text-slate-600 hover:bg-slate-100' : 'text-white hover:bg-white/10'}`}
+                                className={`p-2 rounded-xl transition-all active:scale-90 bg-white/60 dark:bg-slate-900/40 border border-slate-200/40 dark:border-slate-800/30 text-slate-700 dark:text-white`}
                             >
-                                <Menu className="w-6 h-6" />
+                                <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
                         </div>
-
                         {/* Desktop controls */}
                         <div className="hidden lg:flex items-center gap-3">
                             {/* Auth Button Desktop */}
                             {user ? (
-                                <div className={`flex items-center gap-3 mr-2 px-3 py-1.5 rounded-full ${isScrolled ? 'bg-gray-100 dark:bg-slate-800' : 'bg-white/10 text-white'}`}>
+                                <div className={`flex items-center gap-3 mr-1 px-4 py-1.5 rounded-full border transition-all ${isScrolled ? 'bg-indigo-50/10 dark:bg-indigo-950/10 border-indigo-200/40 dark:border-indigo-900/30 text-slate-800 dark:text-indigo-200' : 'bg-white/75 border-slate-200/60 dark:border-indigo-900/30 text-slate-800 dark:text-indigo-200'} hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:shadow-sm`}>
                                     <div className="flex flex-col items-end leading-none">
-                                        <span className="text-xs font-bold">{user.name || 'User'}</span>
-                                        <span className="text-[10px] opacity-70">Saved</span>
+                                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{user.name || 'User'}</span>
+                                        <span className="text-[10px] opacity-85 mt-0.5 font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span> Auto-Saved
+                                        </span>
                                     </div>
-                                    <button onClick={handleLogout} className="hover:text-red-400"><LogOut className="w-4 h-4" /></button>
+                                    <button onClick={handleLogout} className="p-1 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors" title="Logout"><LogOut className="w-4 h-4" /></button>
                                 </div>
                             ) : (
                                 <button
                                     onClick={() => setIsAuthModalOpen(true)}
-                                    className={`text-sm font-bold flex items-center gap-2 mr-2 ${isScrolled ? 'text-slate-600 hover:text-blue-600' : 'text-white/90 hover:text-white'}`}
+                                    className={`text-xs font-bold flex items-center gap-1.5 mr-1 px-4 py-2 rounded-full border transition-all hover:scale-102 ${isScrolled ? 'border-slate-200 hover:border-indigo-300 bg-white hover:bg-indigo-50/20 text-slate-900 hover:text-indigo-600 dark:border-slate-800 dark:hover:border-indigo-500/20 dark:bg-slate-900 dark:hover:bg-slate-950 dark:text-slate-300 dark:hover:text-indigo-400' : 'border-slate-200/60 hover:border-indigo-350 bg-white/70 hover:bg-white text-slate-900 hover:text-indigo-600 dark:border-white/10 dark:hover:border-white/20 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-200'}`}
                                 >
-                                    <LogIn className="w-4 h-4" /> Login
+                                    <LogIn className="w-3.5 h-3.5" /> Login / Sign Up
                                 </button>
                             )}
 
-                            <div className={`h-6 w-px ${isScrolled ? 'bg-slate-300 dark:bg-slate-700' : 'bg-white/20'}`}></div>
-
-                            {/* <button 
-                    onClick={() => window.print()} 
-                    className={`p-2 rounded-full transition ${isScrolled ? 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-white/80 hover:bg-white/10'}`} 
-                    title="Print"
-                  >
-                      <Printer className="w-5 h-5" />
-                  </button> */}
+                            <div className={`h-6 w-px ${isScrolled ? 'bg-slate-200 dark:bg-slate-800' : 'bg-slate-300/30 dark:bg-white/10'}`}></div>
 
                             <button
                                 onClick={toggleTheme}
-                                className={`p-2 rounded-full transition ${isScrolled ? 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-white/80 hover:bg-white/10'}`}
+                                className={`p-2 rounded-xl border border-transparent transition-all hover:scale-110 hover:rotate-12 ${isScrolled ? 'text-slate-500 hover:bg-slate-100 hover:border-slate-200/50 dark:text-slate-400 dark:hover:bg-slate-800' : 'text-slate-800 hover:bg-slate-100/50 dark:text-slate-300 dark:hover:bg-white/10'}`}
                             >
-                                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                                {isDarkMode ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-indigo-500" />}
                             </button>
 
                             <button
                                 onClick={() => { scrollToBuilder(); setShowDownloadModal(true); }}
-                                className="bg-emerald-600 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-emerald-700 transition shadow-lg hover:shadow-emerald-500/30 transform hover:-translate-y-0.5 flex items-center gap-2"
+                                className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 text-white px-5 py-2.5 rounded-full text-xs font-bold hover:shadow-[0_8px_20px_-3px_rgba(16,185,129,0.3)] hover:scale-[1.03] active:scale-95 transition-all transform hover:-translate-y-0.5 flex items-center gap-2 border border-emerald-400/25"
                             >
-                                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} Export PDF
                             </button>
                         </div>
                     </div>
                 </div>
             </nav>
 
-            {/* Hero */}
-            {/* Hero Removed for immediate Builder access */}
-
             <AdBanner position="Top" />
 
             {/* Builder Section - Grid Layout */}
-            <div ref={builderRef} className="flex-1 max-w-[1920px] w-full mx-auto p-4 md:p-8 relative z-0">
+            <div ref={builderRef} className="flex-1 max-w-[1920px] w-full mx-auto p-4 md:p-8 relative z-0 mt-2 sm:mt-4">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
                     {/* Combined Templates + Preview Panel */}
-                    <div className="lg:col-span-5 sticky top-24 hidden lg:flex flex-col gap-4">
-                        <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm p-3">
-                            <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide flex items-center gap-2"><LayoutTemplate className="w-4 h-4 text-blue-500" /> Templates</h3>
-                                <div className="text-xs text-gray-500">Preview & select</div>
+                    <div className="lg:col-span-6 lg:sticky lg:top-24 hidden lg:flex flex-col gap-5">
+                        <div className="glass-panel p-5">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide flex items-center gap-2">
+                                    <LayoutTemplate className="w-4 h-4 text-indigo-500" /> Templates
+                                </h3>
+                                <div className="text-xs text-slate-400 font-medium">Select a design</div>
                             </div>
-                            <div className="flex gap-3 overflow-x-auto py-2 px-1">
+                            <div className="flex gap-4 overflow-x-auto py-2 px-1 scrollbar-hide">
                                 {TEMPLATES.map(t => (
-                                    <button key={t.id} onClick={() => setSelectedTemplateId(t.id)} className={`flex-none w-40 p-2 rounded-lg border ${selectedTemplateId === t.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : 'border-gray-200 dark:border-slate-700'} hover:shadow`}>
-                                        <div className="h-28 mb-2 overflow-hidden rounded-sm bg-white dark:bg-slate-800 flex items-center justify-center">
+                                    <button 
+                                        key={t.id} 
+                                        onClick={() => setSelectedTemplateId(t.id)} 
+                                        className={`flex-none w-36 p-2 rounded-xl border transition-all duration-300 ${
+                                            selectedTemplateId === t.id 
+                                                ? 'border-indigo-500/80 bg-indigo-50/50 dark:bg-indigo-950/40 shadow-[0_4px_20px_-4px_rgba(99,102,241,0.2)]' 
+                                                : 'border-slate-200/60 dark:border-slate-800/60 hover:border-slate-300 dark:hover:border-slate-700 bg-white/20 dark:bg-slate-900/10'
+                                        } hover:shadow-md hover:scale-[1.02]`}
+                                    >
+                                        <div className="h-24 mb-2 overflow-hidden rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-800">
                                             <TemplateThumbnail id={t.id} selected={selectedTemplateId === t.id} />
                                         </div>
-                                        <div className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">{t.name}</div>
+                                        <div className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate text-center">{t.name}</div>
                                     </button>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="bg-gray-200 dark:bg-slate-800 rounded-xl p-6 flex-1 flex flex-col items-center border border-gray-300 dark:border-slate-700 relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-8 bg-gray-300 dark:bg-slate-700 flex items-center px-4 gap-2 z-10 shadow-sm">
+                        <div className="bg-slate-100/90 dark:bg-slate-950/80 rounded-2xl p-6 flex-1 flex flex-col items-center border border-slate-200/50 dark:border-slate-800/50 relative overflow-hidden shadow-inner h-[680px] min-h-[580px]">
+                            <div className="absolute top-0 left-0 w-full h-9 bg-slate-200/80 dark:bg-slate-900/60 backdrop-blur-md flex items-center px-4 gap-2 z-10 border-b border-slate-300/30 dark:border-slate-800/30 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                                 <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
                                 <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
                                 <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
-                                <span className="text-[10px] font-mono text-gray-500 dark:text-gray-400 ml-2">preview.pdf</span>
+                                <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 ml-2">preview.pdf</span>
                             </div>
 
-                            <div className="w-full h-full flex justify-center items-center overflow-hidden" ref={previewContainerRef}>
+                            <div className="w-full h-full flex flex-col items-center overflow-y-auto overflow-x-hidden pt-12 pb-24 scrollbar-hide" ref={previewContainerRef}>
                                 <div
                                     style={{
-                                        transform: `scale(${previewScale})`,
-                                        transformOrigin: 'center center',
-                                        transition: 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-                                        height: 'fit-content'
+                                        width: 794 * previewScale,
+                                        height: 1123 * previewScale,
+                                        position: 'relative',
+                                        flexShrink: 0
                                     }}
-                                    className="shadow-2xl ring-1 ring-black/10"
                                 >
-                                    <TemplateRenderer
-                                        key={selectedTemplateId}
-                                        templateId={selectedTemplateId}
-                                        data={data}
-                                        id="resume-preview-container"
-                                        onSectionClick={handleSectionFocus}
-                                    />
+                                    <div
+                                        style={{
+                                            transform: `scale(${previewScale})`,
+                                            transformOrigin: 'top left',
+                                            transition: 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                                            width: '794px',
+                                            height: '1123px',
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0
+                                        }}
+                                        className="shadow-2xl ring-1 ring-black/10 dark:ring-white/5 rounded-sm overflow-hidden"
+                                    >
+                                        <TemplateRenderer
+                                            key={selectedTemplateId}
+                                            templateId={selectedTemplateId}
+                                            data={data}
+                                            id="resume-preview-container"
+                                            onSectionClick={handleSectionFocus}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-xs z-20">
+                            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-xs z-20 px-4">
                                 <button
                                     onClick={() => setShowDownloadModal(true)}
-                                    className="w-full bg-slate-900 dark:bg-blue-600 text-white py-3 rounded-full font-bold hover:opacity-90 transition shadow-lg flex items-center justify-center gap-2"
+                                    className="w-full bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-600 text-white py-3 rounded-full font-bold shadow-[0_8px_25px_-5px_rgba(99,102,241,0.5)] hover:shadow-[0_12px_30px_-5px_rgba(99,102,241,0.7)] hover:scale-[1.03] active:scale-95 transition-all flex items-center justify-center gap-2 border border-indigo-500/20"
                                 >
                                     {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} Download PDF
                                 </button>
@@ -917,34 +936,43 @@ const App: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Right Column: Editor (Scrollable) - Adjusted to col-span-7 */}
-                    <div className="lg:col-span-7 w-full">
-                        <div className="mb-4 flex items-center justify-end gap-3">
-                            <div className="text-sm text-gray-500 flex items-center gap-2">
+                    {/* Right Column: Editor (Scrollable) */}
+                    <div className="lg:col-span-6 w-full">
+                        <div className="mb-4 flex flex-col sm:flex-row items-end sm:items-center justify-between gap-3 bg-white/60 dark:bg-slate-900/20 p-3.5 rounded-2xl border border-slate-200/40 dark:border-slate-800/30 backdrop-blur-md shadow-sm">
+                            <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 ml-1">
                                 {isSaving ? (
                                     <>
-                                        <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
-                                        <span>Saving...</span>
+                                        <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
+                                        <span className="font-semibold">Saving design...</span>
                                     </>
                                 ) : lastSavedAt ? (
                                     <>
-                                        <Check className="w-4 h-4 text-emerald-500" />
-                                        <span>Saved {formatTimeAgo(lastSavedAt)}</span>
+                                        <Check className="w-4 h-4 text-emerald-500 font-bold" />
+                                        <span className="font-medium text-xs text-slate-500 dark:text-slate-400">Autosaved {formatTimeAgo(lastSavedAt)}</span>
                                     </>
                                 ) : (
-                                    <span className="text-gray-400">Not saved</span>
+                                    <span className="text-slate-400 font-medium text-xs">Unsaved workspace</span>
                                 )}
                             </div>
 
                             <div className="flex items-center gap-2">
-                                <button onClick={forceSave} className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-sm font-semibold hover:shadow">
-                                    <Save className="w-4 h-4 inline-block mr-2" /> Save Now
+                                <button 
+                                    onClick={forceSave} 
+                                    className="px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/50 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-indigo-50/40 dark:hover:bg-slate-800 hover:-translate-y-0.5 hover:shadow-sm hover:border-indigo-200/50 dark:hover:border-indigo-500/20 transition-all flex items-center shadow-sm"
+                                >
+                                    <Save className="w-3.5 h-3.5 mr-1.5 text-indigo-500" /> Save Now
                                 </button>
-                                <button onClick={() => { previewContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }} className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-sm font-semibold hover:shadow">
-                                    <Eye className="w-4 h-4 inline-block mr-2" /> Preview
+                                <button 
+                                    onClick={() => { previewContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }} 
+                                    className="px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/50 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-indigo-50/40 dark:hover:bg-slate-800 hover:-translate-y-0.5 hover:shadow-sm hover:border-indigo-200/50 dark:hover:border-indigo-500/20 transition-all flex items-center shadow-sm"
+                                >
+                                    <Eye className="w-3.5 h-3.5 mr-1.5 text-indigo-500" /> Preview
                                 </button>
-                                <button onClick={() => { setShowDownloadModal(true); }} className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700">
-                                    <Download className="w-4 h-4 inline-block mr-2" /> Export
+                                <button 
+                                    onClick={() => { setShowDownloadModal(true); }} 
+                                    className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl text-xs font-bold shadow-[0_4px_12px_rgba(16,185,129,0.2)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center"
+                                >
+                                    <Download className="w-3.5 h-3.5 mr-1.5" /> Export
                                 </button>
                             </div>
                         </div>
@@ -961,7 +989,7 @@ const App: React.FC = () => {
                 </div>
             </div>
 
-            {/* Off-screen Render Container for Reliable PDF Generation on Mobile */}
+            {/* Off-screen Render Container for Reliable PDF Generation */}
             <div
                 style={{
                     position: 'fixed',
@@ -999,3 +1027,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+

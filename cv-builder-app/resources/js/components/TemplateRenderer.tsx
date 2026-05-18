@@ -73,7 +73,7 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
     const sidebarSections: Record<string, () => React.ReactNode> = {
       skills: () => showSkills ? (
         <div className="mb-6">
-            <h3 className="uppercase tracking-widest text-xs font-bold border-b border-slate-600 mb-3 pb-1" style={{ color: accent !== '#2563eb' ? accent : '#cbd5e1' }}>Skills</h3>
+            <h3 className="uppercase tracking-widest text-xs font-bold border-b border-slate-700/80 mb-3 pb-1 text-slate-200">Skills</h3>
             <div className="flex flex-wrap -mb-2">
                 {data.skills.map((skill, i) => (
                 <span key={i} className="bg-slate-700 px-2 py-1 rounded text-xs mr-2 mb-2 inline-block">{skill}</span>
@@ -83,7 +83,7 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
       ) : <></>,
       languages: () => showLanguages ? (
         <div className="mb-6">
-              <h3 className="uppercase tracking-widest text-xs font-bold border-b border-slate-600 mb-3 pb-1" style={{ color: accent !== '#2563eb' ? accent : '#cbd5e1' }}>Languages</h3>
+              <h3 className="uppercase tracking-widest text-xs font-bold border-b border-slate-700/80 mb-3 pb-1 text-slate-200">Languages</h3>
               <ul className="text-xs text-slate-300 list-disc list-inside">
                 {data.languages.map((l, i) => <li key={i}>{l}</li>)}
               </ul>
@@ -91,7 +91,7 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
       ) : <></>,
       education: () => showEducation ? (
         <div className="mb-6">
-            <h3 className="uppercase tracking-widest text-xs font-bold border-b border-slate-600 mb-3 pb-1" style={{ color: accent !== '#2563eb' ? accent : '#cbd5e1' }}>Education</h3>
+            <h3 className="uppercase tracking-widest text-xs font-bold border-b border-slate-700/80 mb-3 pb-1 text-slate-200">Education</h3>
             {data.education.map(edu => (
                 <div key={edu.id} className="mb-3">
                 <p className="font-bold">{edu.degree}</p>
@@ -168,12 +168,12 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
               {data.personalInfo.profilePicture && (
                 <img src={data.personalInfo.profilePicture} alt="Profile" className="w-32 h-32 rounded-full object-cover mb-4 border-4 border-slate-600" />
               )}
-              <h1 className="text-2xl font-bold leading-tight break-words" style={{ color: accent !== '#2563eb' ? accent : 'white' }}>{data.personalInfo.fullName}</h1>
+              <h1 className="text-2xl font-bold leading-tight break-words text-white">{data.personalInfo.fullName}</h1>
               <p className="text-slate-300 mt-1">{data.experience[0]?.jobTitle}</p>
           </div>
           <div className="space-y-2">
               <div onClick={handleClick('personal')}>
-                  <h3 className="uppercase tracking-widest text-xs font-bold border-b border-slate-600 mb-3 pb-1" style={{ color: accent !== '#2563eb' ? accent : '#cbd5e1' }}>Contact</h3>
+                  <h3 className="uppercase tracking-widest text-xs font-bold border-b border-slate-700/80 mb-3 pb-1 text-slate-200">Contact</h3>
                   <div className="flex flex-col gap-2 text-xs text-slate-300 break-words">
                       <p>{data.personalInfo.email}</p>
                       <p>{data.personalInfo.phone}</p>
@@ -432,18 +432,18 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
     const sections: Record<string, () => React.ReactNode> = {
        summary: () => showSummary ? (
          <div className="mb-6">
-           <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">Executive Profile</h3>
+           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 mb-2">Executive Profile</h3>
            <p className="text-sm leading-relaxed text-gray-800">{data.summary}</p>
          </div>
        ) : <></>,
        experience: () => showExperience ? (
           <div className="mb-6">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4 border-b border-gray-200 pb-2">Professional Experience</h3>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 mb-4 border-b border-slate-200 pb-2">Professional Experience</h3>
             {data.experience.map(exp => (
               <div key={exp.id} className="mb-5">
                  <div className="flex justify-between items-baseline mb-1">
                     <span className="text-lg font-serif font-bold text-gray-900">{exp.company}</span>
-                    <span className="text-sm text-gray-500">{formatDate(exp.startDate)} – {formatDate(exp.endDate)}</span>
+                    <span className="text-sm text-slate-600 font-semibold">{formatDate(exp.startDate)} – {formatDate(exp.endDate)}</span>
                  </div>
                  <div className="text-sm font-bold text-gray-700 mb-2">{exp.jobTitle}</div>
                  <p className="text-sm text-gray-800 whitespace-pre-line leading-relaxed">{exp.description}</p>
@@ -451,24 +451,60 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
             ))}
           </div>
        ) : <></>,
-       // ... simplified other sections for Executive (reuse standard or custom)
+       projects: () => showProjects ? (
+         <div className="mb-6">
+           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 mb-4 border-b border-slate-200 pb-2">Key Projects</h3>
+           {data.projects.map(proj => (
+             <div key={proj.id} className="mb-4">
+                <div className="flex justify-between items-baseline mb-1">
+                   <span className="text-base font-bold text-gray-900">{proj.name}</span>
+                   {proj.link && <span className="text-xs text-indigo-650 font-semibold hover:underline">{proj.link}</span>}
+                </div>
+                {proj.technologies && <div className="text-xs italic text-slate-600 mb-1">Technologies: {proj.technologies}</div>}
+                <p className="text-sm text-gray-805 leading-relaxed">{proj.description}</p>
+             </div>
+           ))}
+         </div>
+       ) : <></>,
        skills: () => showSkills ? (
            <div className="mb-6">
-               <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-200 pb-2">Core Competencies</h3>
+               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 mb-3 border-b border-slate-200 pb-2">Core Competencies</h3>
                <div className="flex flex-wrap -mb-2">
-                  {data.skills.map((s,i) => <span key={i} className="text-sm bg-gray-100 px-3 py-1 rounded text-gray-800 mr-2 mb-2 inline-block">{s}</span>)}
+                  {data.skills.map((s,i) => <span key={i} className="text-sm bg-slate-50 border border-slate-200 px-3 py-1 rounded text-slate-800 mr-2 mb-2 inline-block font-sans font-medium">{s}</span>)}
                </div>
            </div>
        ) : <></>,
-       // Add other sections as needed, reusing GenericRenderer or defining specific ones
        education: () => showEducation ? (
          <div className="mb-6">
-             <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-200 pb-2">Education</h3>
+             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 mb-3 border-b border-slate-200 pb-2">Education</h3>
              {data.education.map(edu => (
-                 <div key={edu.id} className="mb-2">
-                     <div className="font-bold text-gray-900">{edu.school}</div>
-                     <div className="text-sm text-gray-700">{edu.degree}, {formatDate(edu.graduationDate)}</div>
+                 <div key={edu.id} className="mb-3">
+                     <div className="flex justify-between items-baseline mb-1">
+                         <span className="font-bold text-gray-900">{edu.school}</span>
+                         <span className="text-sm text-slate-600 font-semibold">{formatDate(edu.graduationDate)}</span>
+                     </div>
+                     <div className="text-sm text-gray-700">{edu.degree}</div>
                  </div>
+             ))}
+         </div>
+       ) : <></>,
+       languages: () => showLanguages ? (
+         <div className="mb-6">
+             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 mb-3 border-b border-slate-200 pb-2">Languages</h3>
+             <div className="text-sm text-slate-800 leading-relaxed font-serif">{data.languages.join(", ")}</div>
+         </div>
+       ) : <></>,
+       activities: () => showActivities ? (
+         <div className="mb-6">
+             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 mb-3 border-b border-slate-200 pb-2">Activities & Honors</h3>
+             <div className="text-sm text-slate-800 leading-relaxed font-serif">{data.activities.join(", ")}</div>
+         </div>
+       ) : <></>,
+       references: () => showReferences ? (
+         <div className="mb-6">
+             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 mb-3 border-b border-slate-200 pb-2">References</h3>
+             {data.references.map(r => (
+                <div key={r.id} className="text-sm mb-1 text-slate-800"><span className="font-bold text-gray-900">{r.name}</span> - {r.position}, {r.company}</div>
              ))}
          </div>
        ) : <></>
@@ -488,10 +524,8 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
                ))}
             </div>
          </div>
-         <div className="p-10">
-            {renderDynamicSections(sections, data.sectionOrder.filter(s => ['summary', 'experience', 'education', 'skills'].includes(s)))}
-            {/* Render rest generically if needed or specific ones */}
-            {renderDynamicSections(sections, data.sectionOrder.filter(s => !['summary', 'experience', 'education', 'skills'].includes(s)))}
+         <div className="p-10 text-left">
+            {renderDynamicSections(sections)}
          </div>
       </div>
     );
@@ -500,42 +534,86 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
   // 5. Minimal: Centered, lots of whitespace, simple
   const Minimal = () => {
     const sections: Record<string, () => React.ReactNode> = {
-        summary: () => showSummary ? <div className="mb-8 text-center max-w-2xl mx-auto"><p className="text-sm text-gray-600 leading-loose">{data.summary}</p></div> : <></>,
+        summary: () => showSummary ? <div className="mb-8 text-center max-w-2xl mx-auto"><p className="text-sm text-slate-600 leading-loose">{data.summary}</p></div> : <></>,
         experience: () => showExperience ? (
             <div className="mb-10">
-                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-center mb-6 text-gray-400">Experience</h3>
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-center mb-6 text-slate-500">Experience</h3>
                 {data.experience.map(exp => (
                     <div key={exp.id} className="mb-6 text-center">
-                        <div className="font-bold text-gray-900">{exp.jobTitle}</div>
-                        <div className="text-sm text-gray-500 mb-2">{exp.company} | {formatDate(exp.startDate)} - {formatDate(exp.endDate)}</div>
-                        <p className="text-sm text-gray-600 max-w-xl mx-auto whitespace-pre-line">{exp.description}</p>
+                        <div className="font-bold text-slate-900">{exp.jobTitle}</div>
+                        <div className="text-sm text-slate-500 mb-2">{exp.company} | {formatDate(exp.startDate)} - {formatDate(exp.endDate)}</div>
+                        <p className="text-sm text-slate-600 max-w-xl mx-auto whitespace-pre-line leading-relaxed">{exp.description}</p>
+                    </div>
+                ))}
+            </div>
+        ) : <></>,
+        education: () => showEducation ? (
+            <div className="mb-10">
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-center mb-6 text-slate-500">Education</h3>
+                {data.education.map(edu => (
+                    <div key={edu.id} className="mb-4 text-center">
+                        <div className="font-bold text-slate-900">{edu.school}</div>
+                        <div className="text-sm text-slate-600">{edu.degree} | {formatDate(edu.graduationDate)}</div>
+                    </div>
+                ))}
+            </div>
+        ) : <></>,
+        projects: () => showProjects ? (
+            <div className="mb-10">
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-center mb-6 text-slate-500">Projects</h3>
+                {data.projects.map(proj => (
+                    <div key={proj.id} className="mb-6 text-center">
+                        <div className="font-bold text-slate-900">{proj.name}</div>
+                        {proj.link && <div className="text-xs text-indigo-650 hover:underline mb-1">{proj.link}</div>}
+                        {proj.technologies && <div className="text-xs italic text-slate-500 mb-2">Tech: {proj.technologies}</div>}
+                        <p className="text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">{proj.description}</p>
                     </div>
                 ))}
             </div>
         ) : <></>,
         skills: () => showSkills ? (
              <div className="mb-10 text-center">
-                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-center mb-4 text-gray-400">Skills</h3>
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-center mb-4 text-slate-500">Skills</h3>
                 <div className="flex justify-center flex-wrap -mb-4 max-w-lg mx-auto">
-                    {data.skills.map(s => <span key={s} className="text-sm text-gray-600 mx-2 mb-4 inline-block">{s}</span>)}
+                    {data.skills.map(s => <span key={s} className="text-sm text-slate-600 mx-2 mb-4 inline-block font-medium">{s}</span>)}
                 </div>
              </div>
+        ) : <></>,
+        languages: () => showLanguages ? (
+            <div className="mb-10 text-center">
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-center mb-4 text-slate-500">Languages</h3>
+                <div className="flex justify-center flex-wrap max-w-lg mx-auto gap-4">
+                    {data.languages.map(l => <span key={l} className="text-sm text-slate-600 inline-block font-medium">{l}</span>)}
+                </div>
+            </div>
+        ) : <></>,
+        activities: () => showActivities ? (
+            <div className="mb-10 text-center">
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-center mb-4 text-slate-500">Activities</h3>
+                <div className="flex justify-center flex-wrap max-w-lg mx-auto gap-4">
+                    {data.activities.map(a => <span key={a} className="text-sm text-slate-600 inline-block font-medium">{a}</span>)}
+                </div>
+            </div>
+        ) : <></>,
+        references: () => showReferences ? (
+            <div className="mb-10">
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-center mb-6 text-slate-500">References</h3>
+                {data.references.map(r => (
+                    <div key={r.id} className="mb-4 text-center">
+                        <div className="font-bold text-slate-900">{r.name}</div>
+                        <div className="text-sm text-slate-600">{r.position} @ {r.company}</div>
+                        <div className="text-xs text-slate-500">{r.email} | {r.phone}</div>
+                    </div>
+                ))}
+            </div>
         ) : <></>
     };
-
-    // Generic fallback for others in Minimal style
-    const fallbackSection = (title: string, content: React.ReactNode) => (
-        <div className="mb-8 text-center">
-             <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4 text-gray-400">{title}</h3>
-             {content}
-        </div>
-    );
 
     return (
         <div className="h-full bg-white p-12 font-sans flex flex-col items-center">
             <div className="text-center mb-12" onClick={handleClick('personal')}>
-                <h1 className="text-2xl font-normal tracking-widest uppercase mb-4">{data.personalInfo.fullName}</h1>
-                <div className="text-xs text-gray-400 flex flex-wrap justify-center gap-3 tracking-wider">
+                <h1 className="text-2xl font-normal tracking-widest uppercase mb-4 text-slate-900">{data.personalInfo.fullName}</h1>
+                <div className="text-xs text-slate-500 flex flex-wrap justify-center gap-3 tracking-wider">
                     <span>{data.personalInfo.location}</span>
                     <span>{data.personalInfo.email}</span>
                     <span>{data.personalInfo.phone}</span>
@@ -544,10 +622,8 @@ const TemplateRenderer: React.FC<TemplateRendererProps> = ({ templateId, data, i
                     ))}
                 </div>
             </div>
-            <div className="w-full">
+            <div className="w-full text-left">
                 {renderDynamicSections(sections)}
-                {/* Fallback for unmapped sections */}
-                {showEducation && !sections.education && fallbackSection('Education', data.education.map(e => <div key={e.id} className="text-sm">{e.school} - {e.degree}</div>))}
             </div>
         </div>
     );
