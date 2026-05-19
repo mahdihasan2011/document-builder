@@ -7,7 +7,7 @@ import TemplateRenderer from './components/TemplateRenderer';
 import Editor from './components/Editor';
 import AuthModal from './components/AuthModal';
 import { apiService } from './services/apiService';
-import { Download, Moon, Sun, Menu, X, Sparkles, Eye, Check, Edit2, ChevronRight, LayoutTemplate, LogIn, LogOut, Save, Loader2 } from 'lucide-react';
+import { Download, Moon, Sun, Menu, X, Sparkles, Eye, Check, Edit2, ChevronRight, ChevronLeft, LayoutTemplate, LogIn, LogOut, Save, Loader2 } from 'lucide-react';
 
 const APP_NAME = import.meta.env.VITE_APP_NAME || 'ATS Friendly Resume Builder';
 
@@ -334,6 +334,7 @@ const App: React.FC = () => {
 
     const builderRef = useRef<HTMLDivElement>(null);
     const previewContainerRef = useRef<HTMLDivElement>(null);
+    const templateContainerRef = useRef<HTMLDivElement>(null);
     const [previewScale, setPreviewScale] = useState(0.8);
 
     // --- Auth & Data Loading Effects ---
@@ -829,7 +830,7 @@ const App: React.FC = () => {
                     </div>
 
                     {/* User Info Mobile */}
-                    {user ? (
+                    {/* {user ? (
                         <div className="p-4 bg-indigo-50/50 dark:bg-indigo-950/20 border-b border-gray-100 dark:border-slate-800 flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
                                 {user.name ? user.name[0] : 'U'}
@@ -846,7 +847,7 @@ const App: React.FC = () => {
                                 Login / Signup
                             </button>
                         </div>
-                    )}
+                    )} */}
 
                     {/* Scrollable List */}
                     <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
@@ -930,7 +931,7 @@ const App: React.FC = () => {
                         {/* Desktop controls */}
                         <div className="hidden lg:flex items-center gap-3">
                             {/* Auth Button Desktop */}
-                            {user ? (
+                            {/* {user ? (
                                 <div className={`flex items-center gap-3 mr-1 px-4 py-1.5 rounded-full border transition-all ${isScrolled ? 'bg-indigo-50/10 dark:bg-indigo-950/10 border-indigo-200/40 dark:border-indigo-900/30 text-slate-800 dark:text-indigo-200' : 'bg-white/75 border-slate-200/60 dark:border-indigo-900/30 text-slate-800 dark:text-indigo-200'} hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:shadow-sm`}>
                                     <div className="flex flex-col items-end leading-none">
                                         <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{user.name || 'User'}</span>
@@ -947,7 +948,7 @@ const App: React.FC = () => {
                                 >
                                     <LogIn className="w-3.5 h-3.5" /> Login / Sign Up
                                 </button>
-                            )}
+                            )} */}
 
                             <div className={`h-6 w-px ${isScrolled ? 'bg-slate-200 dark:bg-slate-800' : 'bg-slate-300/30 dark:bg-white/10'}`}></div>
 
@@ -984,23 +985,42 @@ const App: React.FC = () => {
                                 </h3>
                                 <div className="text-xs text-slate-400 font-medium">Select a design</div>
                             </div>
-                            <div className="flex gap-4 overflow-x-auto py-2 px-1 scrollbar-hide">
-                                {TEMPLATES.map(t => (
-                                    <button 
-                                        key={t.id} 
-                                        onClick={() => setSelectedTemplateId(t.id)} 
-                                        className={`flex-none w-36 p-2 rounded-xl border transition-all duration-300 ${
-                                            selectedTemplateId === t.id 
-                                                ? 'border-indigo-500/80 bg-indigo-50/50 dark:bg-indigo-950/40 shadow-[0_4px_20px_-4px_rgba(99,102,241,0.2)]' 
-                                                : 'border-slate-200/60 dark:border-slate-800/60 hover:border-slate-300 dark:hover:border-slate-700 bg-white/20 dark:bg-slate-900/10'
-                                        } hover:shadow-md hover:scale-[1.02]`}
-                                    >
-                                        <div className="h-24 mb-2 overflow-hidden rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-800">
-                                            <TemplateThumbnail id={t.id} selected={selectedTemplateId === t.id} />
-                                        </div>
-                                        <div className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate text-center">{t.name}</div>
-                                    </button>
-                                ))}
+                            <div className="relative group w-full">
+                                <button 
+                                    onClick={() => templateContainerRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
+                                    className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 p-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-all hover:scale-110 disabled:opacity-0 focus:outline-none"
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                </button>
+                                
+                                <div 
+                                    ref={templateContainerRef} 
+                                    className="flex gap-4 overflow-x-auto py-2 px-1 scrollbar-hide snap-x" 
+                                >
+                                    {TEMPLATES.map(t => (
+                                        <button 
+                                            key={t.id} 
+                                            onClick={() => setSelectedTemplateId(t.id)} 
+                                            className={`snap-center flex-none w-36 p-2 rounded-xl border transition-all duration-300 ${
+                                                selectedTemplateId === t.id 
+                                                    ? 'border-indigo-500/80 bg-indigo-50/50 dark:bg-indigo-950/40 shadow-[0_4px_20px_-4px_rgba(99,102,241,0.2)]' 
+                                                    : 'border-slate-200/60 dark:border-slate-800/60 hover:border-slate-300 dark:hover:border-slate-700 bg-white/20 dark:bg-slate-900/10'
+                                            } hover:shadow-md hover:scale-[1.02]`}
+                                        >
+                                            <div className="h-24 mb-2 overflow-hidden rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-800">
+                                                <TemplateThumbnail id={t.id} selected={selectedTemplateId === t.id} />
+                                            </div>
+                                            <div className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate text-center">{t.name}</div>
+                                        </button>
+                                    ))}
+                                </div>
+                                
+                                <button 
+                                    onClick={() => templateContainerRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
+                                    className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 p-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-all hover:scale-110 focus:outline-none"
+                                >
+                                    <ChevronRight className="w-4 h-4" />
+                                </button>
                             </div>
                         </div>
 
@@ -1059,7 +1079,7 @@ const App: React.FC = () => {
 
                     {/* Right Column: Editor (Scrollable) */}
                     <div className="lg:col-span-6 w-full">
-                        <div className="mb-4 flex flex-col sm:flex-row items-end sm:items-center justify-between gap-3 bg-white/60 dark:bg-slate-900/20 p-3.5 rounded-2xl border border-slate-200/40 dark:border-slate-800/30 backdrop-blur-md shadow-sm">
+                        {/* <div className="mb-4 flex flex-col sm:flex-row items-end sm:items-center justify-between gap-3 bg-white/60 dark:bg-slate-900/20 p-3.5 rounded-2xl border border-slate-200/40 dark:border-slate-800/30 backdrop-blur-md shadow-sm">
                             <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 ml-1">
                                 {isSaving ? (
                                     <>
@@ -1084,7 +1104,13 @@ const App: React.FC = () => {
                                     <Save className="w-3.5 h-3.5 mr-1.5 text-indigo-500" /> Save Now
                                 </button>
                                 <button 
-                                    onClick={() => { previewContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }} 
+                                    onClick={() => { 
+                                        if (window.innerWidth < 1024) {
+                                            setShowMobilePreview(true);
+                                        } else {
+                                            previewContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                                        }
+                                    }} 
                                     className="px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/50 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-indigo-50/40 dark:hover:bg-slate-800 hover:-translate-y-0.5 hover:shadow-sm hover:border-indigo-200/50 dark:hover:border-indigo-500/20 transition-all flex items-center shadow-sm"
                                 >
                                     <Eye className="w-3.5 h-3.5 mr-1.5 text-indigo-500" /> Preview
@@ -1096,7 +1122,7 @@ const App: React.FC = () => {
                                     <Download className="w-3.5 h-3.5 mr-1.5" /> Export
                                 </button>
                             </div>
-                        </div>
+                        </div> */}
 
                         <Editor
                             data={data}
