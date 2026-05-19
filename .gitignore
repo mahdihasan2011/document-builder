@@ -1,0 +1,7 @@
+/public/hot
+/cv-builder-app/.env
+/cv-builder-app/node_modules/
+/cv-builder-app/bootstrap/cache/*.php
+/cv-builder-app/storage/framework/sessions/*
+/cv-builder-app/storage/framework/views/*.php
+/cv-builder-app/storage/logs/*.log
