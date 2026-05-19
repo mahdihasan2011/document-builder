@@ -26,6 +26,11 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/index.tsx'])
+
+        <!-- Google AdSense -->
+        @if(env('VITE_ADSENSE_CLIENT'))
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ env('VITE_ADSENSE_CLIENT') }}" crossorigin="anonymous"></script>
+        @endif
     </head>
     <body class="antialiased">
         <div id="root"></div>

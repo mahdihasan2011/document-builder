@@ -287,14 +287,46 @@ const MobilePreviewModal = ({
     );
 };
 
-const AdBanner = ({ position }: { position: string }) => (
-    <div className="w-full bg-slate-50/50 dark:bg-slate-900/30 py-3 sm:py-6 flex justify-center border-b border-slate-200/50 dark:border-slate-800/40 mt-20 sm:mt-24 backdrop-blur-sm relative z-10">
-        <div className="w-[728px] max-w-[92vw] h-[55px] sm:h-[90px] bg-white/60 dark:bg-slate-900/40 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 text-[10px] sm:text-xs border border-dashed border-slate-200 dark:border-slate-850 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.01)] backdrop-blur-md">
-            <span className="font-bold uppercase tracking-wider mb-0.5 sm:mb-1 text-[8px] sm:text-[10px] text-indigo-500 dark:text-indigo-400">Sponsored</span>
-            <span className="font-semibold text-slate-500 dark:text-slate-400">Ad Space ({position})</span>
+const AdBanner = ({ position }: { position: string }) => {
+    const adClient = import.meta.env.VITE_ADSENSE_CLIENT;
+    const adSlot = position === 'Top' 
+        ? import.meta.env.VITE_ADSENSE_TOP_SLOT 
+        : import.meta.env.VITE_ADSENSE_BOTTOM_SLOT;
+
+    useEffect(() => {
+        if (adClient && adSlot) {
+            try {
+                // Initialize the loaded AdSense ad unit
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+            } catch (err) {
+                console.warn('AdSense initialisation skipped or blocked by blocker:', err);
+            }
+        }
+    }, [adClient, adSlot]);
+
+    return (
+        <div className="w-full bg-slate-50/50 dark:bg-slate-900/30 py-3 sm:py-6 flex justify-center border-b border-slate-200/50 dark:border-slate-800/40 mt-20 sm:mt-24 backdrop-blur-sm relative z-10 print:hidden">
+            {adClient && adSlot ? (
+                <div className="w-[728px] max-w-[92vw] overflow-hidden flex justify-center">
+                    <ins
+                        className="adsbygoogle"
+                        style={{ display: 'block', width: '100%', minWidth: '250px', height: '90px' }}
+                        data-ad-client={adClient}
+                        data-ad-slot={adSlot}
+                        data-ad-format="horizontal"
+                        data-full-width-responsive="true"
+                    ></ins>
+                </div>
+            ) : (
+                <div className="w-[728px] max-w-[92vw] h-[55px] sm:h-[90px] bg-white/60 dark:bg-slate-900/40 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 text-[10px] sm:text-xs border border-dashed border-slate-200 dark:border-slate-800 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.01)] backdrop-blur-md">
+                    <span className="font-bold uppercase tracking-wider mb-0.5 sm:mb-1 text-[8px] sm:text-[10px] text-indigo-500 dark:text-indigo-400">Sponsored</span>
+                    <span className="font-semibold text-slate-500 dark:text-slate-400 text-center px-4">Ad Space ({position}) — Not Configured</span>
+                    <span className="text-[9px] opacity-75 text-slate-400 mt-0.5">Add VITE_ADSENSE_CLIENT and VITE_ADSENSE_{position.toUpperCase()}_SLOT to .env to go live</span>
+                </div>
+            )}
         </div>
-    </div>
-);
+    );
+};
 
 const App: React.FC = () => {
     const [data, setData] = useState<ResumeData>(INITIAL_DATA);
