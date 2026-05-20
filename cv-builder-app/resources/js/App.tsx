@@ -12,37 +12,169 @@ import { Download, Moon, Sun, Menu, X, Sparkles, Eye, Check, Edit2, ChevronRight
 const APP_NAME = import.meta.env.VITE_APP_NAME || 'ATS Friendly Resume Builder';
 
 const Footer = () => (
-    <footer className="bg-slate-900 text-white py-12 border-t border-slate-800 relative z-10 mt-auto">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
+    <footer className="bg-slate-950 text-white py-12 border-t border-slate-800 relative z-10 mt-auto">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
             <div className="col-span-1 md:col-span-2 space-y-4">
-                <div className="flex items-center gap-2 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                    <Sparkles className="w-6 h-6 text-blue-400" /> <span className="text-slate-400">{APP_NAME}</span>
+                <div className="flex items-center gap-3 text-2xl font-bold">
+                    <span className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 shadow-lg shadow-sky-500/10 text-white">
+                        <Sparkles className="w-5 h-5" />
+                    </span>
+                    <div>
+                        <div className="text-xl font-bold text-white">{APP_NAME}</div>
+                        <p className="text-slate-400 text-sm">
+                            AI-built resume and career tools with modern ATS-safe templates, career content, and privacy-respecting support.
+                        </p>
+                    </div>
                 </div>
-                <p className="text-slate-400 max-w-sm leading-relaxed">
-                    The ultimate AI-powered resume builder helping thousands of professionals land their dream jobs with ATS-optimized templates.
-                </p>
             </div>
             <div>
-                <h3 className="font-bold mb-6 text-slate-200">Product</h3>
+                <h3 className="font-bold mb-6 text-slate-200">Resume Tools</h3>
                 <ul className="space-y-3 text-slate-400 text-sm">
-                    <li><a href="#" className="hover:text-blue-400 transition">Templates</a></li>
-                    <li><a href="#" className="hover:text-blue-400 transition">Examples</a></li>
-                    <li><a href="#" className="hover:text-blue-400 transition">Pricing</a></li>
+                    <li><a href="/resume-template/software-engineer" className="hover:text-blue-400 transition">Software Engineer Templates</a></li>
+                    <li><a href="/cv-example/accountant" className="hover:text-blue-400 transition">CV Examples</a></li>
+                    <li><a href="/cover-letter/marketing-manager" className="hover:text-blue-400 transition">Cover Letter Samples</a></li>
+                    <li><a href="/ai/ats-review" className="hover:text-blue-400 transition">ATS Resume Checker</a></li>
                 </ul>
             </div>
             <div>
-                <h3 className="font-bold mb-6 text-slate-200">Company</h3>
+                <h3 className="font-bold mb-6 text-slate-200">Resources</h3>
                 <ul className="space-y-3 text-slate-400 text-sm">
-                    <li><a href="#" className="hover:text-blue-400 transition">About Us</a></li>
-                    <li><a href="#" className="hover:text-blue-400 transition">Privacy Policy</a></li>
-                    <li><a href="#" className="hover:text-blue-400 transition">Terms of Service</a></li>
+                    <li><a href="/resume-template/software-engineer" className="hover:text-blue-400 transition">Resume Templates</a></li>
+                    <li><a href="/cover-letter/marketing-manager" className="hover:text-blue-400 transition">Cover Letter Generator</a></li>
+                    <li><a href="/ai/test" className="hover:text-blue-400 transition">AI Demo & Schema</a></li>
+                    <li><a href="/" className="hover:text-blue-400 transition">Job Interview Guides</a></li>
                 </ul>
             </div>
         </div>
-        <div className="text-center text-slate-600 text-sm mt-12 pt-8 border-t border-slate-800">
-            © {new Date().getFullYear()} BD METRIX. All rights reserved.
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-400 text-sm">
+            <div className="space-y-2">
+                <p className="font-semibold text-slate-200">Share & Grow</p>
+                <ul className="space-y-2">
+                    <li><a href="/resume-template/software-engineer" className="hover:text-blue-400 transition">Public Resume Links</a></li>
+                    <li><a href="/cv-example/accountant" className="hover:text-blue-400 transition">Portfolio Pages</a></li>
+                    <li><a href="/" className="hover:text-blue-400 transition">One-click PDF Export</a></li>
+                </ul>
+            </div>
+            <div className="space-y-2">
+                <p className="font-semibold text-slate-200">Company</p>
+                <ul className="space-y-2">
+                    <li><a href="#builder" className="hover:text-blue-400 transition">Built with Resume AI</a></li>
+                    <li><a href="#privacy" className="hover:text-blue-400 transition">Privacy Policy</a></li>
+                    <li><a href="#terms" className="hover:text-blue-400 transition">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div className="text-center text-slate-500 text-sm mt-12 pt-8 border-t border-slate-800">
+            © {new Date().getFullYear()} {APP_NAME}. Built with Resume AI for real users and higher organic visibility.
         </div>
     </footer>
+);
+
+const PolicyPageShell = ({ title, children, description }: { title: string; description: string; children: React.ReactNode }) => (
+    <main className="relative z-10 min-h-screen py-16 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),transparent_32%),_radial-gradient(circle_at_bottom_right,_rgba(168,85,247,0.08),transparent_30%)]">
+        <div className="max-w-6xl mx-auto px-6">
+            <div className="bg-white/95 dark:bg-slate-900/95 border border-slate-200/60 dark:border-slate-800/70 rounded-3xl shadow-2xl shadow-slate-900/5 dark:shadow-none p-10 sm:p-14">
+                <div className="flex items-center justify-between gap-4 mb-8">
+                    <div>
+                        <p className="text-indigo-600 uppercase tracking-[0.25em] text-xs font-semibold">Legal</p>
+                        <h1 className="mt-4 text-4xl font-bold text-slate-900 dark:text-white">{title}</h1>
+                        <p className="mt-4 text-slate-600 dark:text-slate-400 max-w-3xl">{description}</p>
+                    </div>
+                    <a href="#builder" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-indigo-600 transition">
+                        ← Back to Resume Builder
+                    </a>
+                </div>
+                <div className="space-y-10 text-slate-700 dark:text-slate-300 text-base leading-7">
+                    {children}
+                </div>
+            </div>
+        </div>
+    </main>
+);
+
+const PrivacyPolicyPage = () => (
+    <PolicyPageShell
+        title="Privacy Policy"
+        description="Learn how ATS Friendly Resume Builder collects, uses, and protects your data while supporting AI-powered resume features."
+    >
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Introduction</h2>
+            <p>ATS Friendly Resume Builder is committed to protecting your privacy. This policy explains how we use personal information collected through our website, tools, and AI services.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Information We Collect</h2>
+            <ul className="list-disc ml-6 space-y-2">
+                <li>Resume content and profile information you enter into the builder.</li>
+                <li>Email address or authentication tokens for account features.</li>
+                <li>Technical metadata such as browser type, device, and session activity.</li>
+                <li>Usage data to improve recommendations, templates, and AI performance.</li>
+            </ul>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">How We Use Data</h2>
+            <p>We use your information to deliver the resume builder experience, generate ATS-friendly recommendations, store your progress if you create an account, and improve our AI resume and career content services.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">AI and Third-Party Services</h2>
+            <p>AI features rely on OpenAI and other third-party APIs. We only send the content you submit for resume review or cover letter generation to those services to deliver your requested output.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Cookies and Tracking</h2>
+            <p>We may use cookies and browser storage to save theme preferences, session state, and analytics data. You can manage these through your browser settings.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Security</h2>
+            <p>We apply industry-standard practices to keep your information secure. However, no system is completely immune to risk, so please avoid sharing highly sensitive personal data in public or shared environments.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Children</h2>
+            <p>Our services are not intended for children under 13. We do not knowingly collect personal data from minors.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Updates</h2>
+            <p>We may update this policy from time to time. Changes will be reflected on this page with the latest effective date.</p>
+        </section>
+    </PolicyPageShell>
+);
+
+const TermsOfServicePage = () => (
+    <PolicyPageShell
+        title="Terms of Service"
+        description="Read the terms that govern your use of ATS Friendly Resume Builder, including AI features, account usage, and intellectual property."
+    >
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Acceptance of Terms</h2>
+            <p>By using the resume builder and any of our AI-powered career tools, you agree to these Terms of Service. If you do not agree, please exit the site and do not use the services.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Service Description</h2>
+            <p>ATS Friendly Resume Builder provides web-based resume creation, ATS review, cover letter generation, and related career guidance tools. The service is provided as-is and may change over time.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">User Content</h2>
+            <p>You are responsible for the content you submit. Do not upload illegal, harmful, or copyrighted material that you do not have permission to use.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">AI Disclaimers</h2>
+            <p>AI-generated output is intended to help you format and optimize resumes but does not guarantee job placement. Always review and customize suggested text before submitting it to employers.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Intellectual Property</h2>
+            <p>All site design, code, and original materials are owned by ATS Friendly Resume Builder. You may use generated resume text for personal career purposes.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Prohibited Use</h2>
+            <p>Do not use this service to defraud, harass, harm others, or violate applicable laws. We may suspend access for misuse.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Limitation of Liability</h2>
+            <p>We are not liable for direct or indirect damages from your use of the service, including resumes that are rejected or applications that are not successful.</p>
+        </section>
+        <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Governing Law</h2>
+            <p>These terms are governed by the laws of the jurisdiction where the service operates. Any disputes should be settled through the applicable legal process.</p>
+        </section>
+    </PolicyPageShell>
 );
 
 const ConfirmationModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean; onClose: () => void; onConfirm: () => void }) => {
@@ -343,6 +475,13 @@ const App: React.FC = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
     const [resumeHeight, setResumeHeight] = useState(1123);
+    const [viewPage, setViewPage] = useState<'builder' | 'privacy' | 'terms'>(() => {
+        if (typeof window === 'undefined') return 'builder';
+        const hash = window.location.hash.toLowerCase();
+        if (hash === '#privacy') return 'privacy';
+        if (hash === '#terms') return 'terms';
+        return 'builder';
+    });
 
     // Auth State
     const [user, setUser] = useState<User | null>(null);
@@ -497,6 +636,19 @@ const App: React.FC = () => {
         };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    useEffect(() => {
+        const updateHashPage = () => {
+            const hash = window.location.hash.toLowerCase();
+            if (hash === '#privacy') setViewPage('privacy');
+            else if (hash === '#terms') setViewPage('terms');
+            else setViewPage('builder');
+        };
+
+        updateHashPage();
+        window.addEventListener('hashchange', updateHashPage);
+        return () => window.removeEventListener('hashchange', updateHashPage);
     }, []);
 
     useLayoutEffect(() => {
@@ -1002,10 +1154,10 @@ const App: React.FC = () => {
                 </div>
             </nav>
 
-            <AdBanner position="Top" />
+            {viewPage === 'builder' && <AdBanner position="Top" />}
 
             {/* Builder Section - Grid Layout */}
-            <div ref={builderRef} className="flex-1 max-w-[1920px] w-full mx-auto p-4 md:p-8 relative z-0 mt-2 sm:mt-4">
+            <div ref={builderRef} className={`flex-1 max-w-[1920px] w-full mx-auto p-4 md:p-8 relative z-0 mt-2 sm:mt-4 ${viewPage !== 'builder' ? 'hidden' : ''}`}>
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
                     {/* Combined Templates + Preview Panel */}
@@ -1186,7 +1338,10 @@ const App: React.FC = () => {
                 />
             </div>
 
-            <AdBanner position="Bottom" />
+            {viewPage === 'privacy' && <PrivacyPolicyPage />}
+            {viewPage === 'terms' && <TermsOfServicePage />}
+
+            {viewPage === 'builder' && <AdBanner position="Bottom" />}
             <Footer />
             <ConfirmationModal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} onConfirm={handleDownloadPDF} />
             <MobilePreviewModal
